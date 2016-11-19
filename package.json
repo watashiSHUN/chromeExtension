@@ -7,7 +7,7 @@
     "tsc": "tsc",
     "tsc:w": "tsc -w",
     "start": "concurrently \"npm run tsc:w\" \"npm run lite\"",
-    "copy-lib": "mkdir lib && cp node_modules/{angular2/bundles/angular2-polyfills.js,systemjs/dist/system.src.js,rxjs/bundles/Rx.js,angular2/bundles/angular2.dev.js} lib/",
+    "copy-lib": "cp node_modules/angular2/bundles/angular2-polyfills.js node_modules/systemjs/dist/system.src.js node_modules/rxjs/bundles/Rx.js node_modules/angular2/bundles/angular2.dev.js lib/",
     "compress": "zip -r -X $npm_package_name-$npm_package_version.zip ./{templates/*,lib/*,css/*,scripts/*.js,*.html,manifest.json,*.png,*.ico}"
   },
   "dependencies": {

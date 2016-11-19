@@ -6,6 +6,6 @@
     "author": "shun",
     "permission":["bookmarks"],
     "chrome_url_overrides":{
-        "newtab":"index.html"
+        "bookmarks":"index.html"
     }
 }

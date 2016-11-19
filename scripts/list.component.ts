@@ -1,3 +1,4 @@
+///<reference path="../typings/gchrome/chrome.d.ts" />
 import {Component} from 'angular2/core';
 import {BookmarkComponent} from './bookmark.component';
 
