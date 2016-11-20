@@ -1,17 +1,16 @@
-///<reference path="../typings/gchrome/chrome.d.ts" />
-import {Component} from 'angular2/core';
-import {BookmarkComponent} from './bookmark.component';
+///<reference path="../typings/chrome/chrome.d.ts" />
+import {Component, NgZone} from 'angular2/core';
 
 @Component({
     selector:'sp-list',
-    templateUrl:'templates/list.html',
-    directives:[BookmarkComponent]
+    templateUrl:'templates/list.html'
 })
 export class ListComponent{
-    bookmarks;
-    constructor(){
-        chrome.bookmarks.getRecent(10,function(results){
-            this.bookmark = results
+    bookmarks; // even if bookmarks is tracked, it's change still can not be detected
+    constructor(ngzone:NgZone){
+        chrome.bookmarks.getRecent(10,(results)=>{
+            ngzone.run(()=>{this.bookmarks = results;});
         })
     }
+
 }

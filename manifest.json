@@ -4,8 +4,9 @@
     "description": "display most recently added bookmarks",
     "version": "1.0.0",
     "author": "shun",
-    "permission":["bookmarks"],
+    "permissions":["bookmarks"],
     "chrome_url_overrides":{
         "bookmarks":"index.html"
-    }
+    },
+    "content_security_policy": "script-src 'self' 'unsafe-eval'; object-src 'self'"
 }
