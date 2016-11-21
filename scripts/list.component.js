@@ -23,6 +23,38 @@ System.register(['angular2/core'], function(exports_1, context_1) {
                     var _this = this;
                     chrome.bookmarks.getRecent(10, function (results) {
                         ngzone.run(function () { _this.bookmarks = results; });
+                    }); // get last 10 saved bookmarks
+                    // get pages visited from lastweek
+                    var millisecondsInOneWeek = 1000 * 60 * 60 * 24 * 7;
+                    var oneWeekAgo = (new Date()).getTime() - millisecondsInOneWeek;
+                    var searchObject = { 'text': '', 'startTime': oneWeekAgo };
+                    chrome.history.search(searchObject, function (historyItems) {
+                        // TODO optimization
+                        var dictionary = {}; // not an array
+                        var pattern = /.*:\/\/[^/]*/;
+                        for (var _i = 0, historyItems_1 = historyItems; _i < historyItems_1.length; _i++) {
+                            var historyItem = historyItems_1[_i];
+                            var matchResults = historyItem.url.match(pattern);
+                            if (matchResults.length == 1) {
+                                var rootUrl = matchResults[0];
+                                if (rootUrl in dictionary) {
+                                    dictionary[rootUrl] += historyItem.visitCount;
+                                }
+                                else {
+                                    dictionary[rootUrl] = historyItem.visitCount;
+                                }
+                            }
+                        }
+                        // insertion sort
+                        var decendingArray = [];
+                        for (var key in dictionary) {
+                            var count = dictionary[key];
+                            decendingArray.push([key, count]);
+                        }
+                        decendingArray.sort(function (a, b) { return b[1] - a[1]; });
+                        ngzone.run(function () {
+                            _this.histories = decendingArray;
+                        });
                     });
                 }
                 ListComponent = __decorate([
