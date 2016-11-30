@@ -1,6 +1,7 @@
+
 <ul>
 <li *ngFor="#bookmark of bookmarks">
-    {{bookmark.title}}
+    <a href="{{bookmark.url}}">{{bookmark.title}}</a>
 </li>
 </ul>
 

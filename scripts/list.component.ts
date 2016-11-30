@@ -10,7 +10,7 @@ export class ListComponent{
     bookmarks; // even if bookmarks is tracked, it's change still can not be detected
     histories;
     constructor(ngzone:NgZone){
-        chrome.bookmarks.getRecent(10,(results)=>{
+        chrome.bookmarks.getRecent(20,(results)=>{
             ngzone.run(()=>{this.bookmarks = results;});
         });// get last 10 saved bookmarks
         // get pages visited from lastweek
