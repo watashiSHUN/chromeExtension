@@ -6,12 +6,10 @@
     "lite": "lite-server",
     "tsc": "tsc",
     "tsc:w": "tsc -w",
-    "start": "concurrently \"npm run tsc:w\" \"npm run lite\"",
-    "copy-lib": "cp node_modules/angular2/bundles/angular2-polyfills.js node_modules/systemjs/dist/system.src.js node_modules/rxjs/bundles/Rx.js node_modules/angular2/bundles/angular2.dev.js lib/",
-    "compress": "zip -r -X $npm_package_name-$npm_package_version.zip ./{templates/*,lib/*,css/*,scripts/*.js,*.html,manifest.json,*.png,*.ico}"
+    "start": "concurrently \"npm run tsc:w\" \"npm run lite\""
   },
   "dependencies": {
-    "angular2": "2.0.0-beta.7",
+    "angular2": "2.0.0-beta.9",
     "systemjs": "0.19.22",
     "es6-promise": "^3.0.2",
     "es6-shim": "^0.33.3",

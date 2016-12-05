@@ -7,6 +7,8 @@ TODO list:
 * Dict.youdao.com get your most recently vocabulary list (from the url)
 * Google.com get your keywords (from the url)
 * Maynot apply here, but when you have multiple tabs open, organize them as groups with the same root url?
+* Add remove bookmarks action
+* Remove pakage.json, can't run it locally anyway
 
 DEBUG list:
 * Sometimes, the most common websites won't even show up

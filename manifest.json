@@ -1,12 +1,12 @@
 {
     "manifest_version": 2,
-    "name": "Bookmark Extension",
+    "name": "newtab Extension",
     "description": "display most recently added bookmarks",
     "version": "1.0.0",
     "author": "shun",
     "permissions":["bookmarks","history"],
     "chrome_url_overrides":{
-        "bookmarks":"index.html"
+        "newtab":"index.html"
     },
-    "content_security_policy": "script-src 'self' 'unsafe-eval'; object-src 'self'"
+    "content_security_policy": "script-src 'self' https://code.angularjs.org 'unsafe-eval'; object-src 'self'"
 }

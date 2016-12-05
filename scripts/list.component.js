@@ -22,9 +22,10 @@ System.register(["angular2/core"], function (exports_1, context_1) {
             ListComponent = (function () {
                 function ListComponent(ngzone) {
                     var _this = this;
+                    this.ngZone = ngzone;
                     chrome.bookmarks.getRecent(20, function (results) {
                         ngzone.run(function () { _this.bookmarks = results; });
-                    }); // get last 10 saved bookmarks
+                    }); // get last 20 saved bookmarks
                     // get pages visited from lastweek
                     var millisecondsInOneWeek = 1000 * 60 * 60 * 24 * 7;
                     var oneWeekAgo = (new Date()).getTime() - millisecondsInOneWeek;
@@ -58,6 +59,20 @@ System.register(["angular2/core"], function (exports_1, context_1) {
                         });
                     });
                 }
+                ListComponent.prototype.mouseEnter = function (bookmark) {
+                    bookmark.show = true;
+                };
+                ListComponent.prototype.mouseLeave = function (bookmark) {
+                    bookmark.show = false;
+                };
+                ListComponent.prototype.click = function (bookmark) {
+                    var _this = this;
+                    console.log(bookmark.id);
+                    // alert instead of delete directly
+                    chrome.bookmarks.remove(bookmark.id, function () { return chrome.bookmarks.getRecent(20, function (results) {
+                        _this.ngZone.run(function () { _this.bookmarks = results; });
+                    }); });
+                };
                 return ListComponent;
             }());
             ListComponent = __decorate([

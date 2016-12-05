@@ -7,12 +7,28 @@ import {Component, NgZone} from 'angular2/core';
 })
 // TODO add input to filter time
 export class ListComponent{
+
     bookmarks; // even if bookmarks is tracked, it's change still can not be detected
     histories;
+    ngZone;
+    mouseEnter(bookmark){
+        bookmark.show = true;
+    }
+    mouseLeave(bookmark){
+        bookmark.show = false;
+    }
+    click(bookmark){
+        console.log(bookmark.id);
+        // alert instead of delete directly
+        chrome.bookmarks.remove(bookmark.id,()=>chrome.bookmarks.getRecent(20,(results)=>{
+            this.ngZone.run(()=>{this.bookmarks = results;});
+        }));
+    }
     constructor(ngzone:NgZone){
+        this.ngZone = ngzone;
         chrome.bookmarks.getRecent(20,(results)=>{
             ngzone.run(()=>{this.bookmarks = results;});
-        });// get last 10 saved bookmarks
+        });// get last 20 saved bookmarks
         // get pages visited from lastweek
         var millisecondsInOneWeek:number = 1000*60*60*24*7;
         var oneWeekAgo:number = (new Date()).getTime()-millisecondsInOneWeek;
