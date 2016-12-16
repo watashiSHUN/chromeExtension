@@ -9,6 +9,7 @@ TODO list:
 * Maynot apply here, but when you have multiple tabs open, organize them as groups with the same root url?
 * Add "edit" for bookmarks => rename/delete
 * Remove pakage.json, can't run it locally anyway
+* Add tiles that filter by tag ie [antares] or filter by folder
 
 DEBUG list:
 * Sometimes, the most common websites won't even show up
