@@ -60,18 +60,34 @@ System.register(["angular2/core"], function (exports_1, context_1) {
                     });
                 }
                 ListComponent.prototype.mouseEnter = function (bookmark) {
-                    bookmark.show = true;
+                    bookmark.showEdit = true;
                 };
                 ListComponent.prototype.mouseLeave = function (bookmark) {
-                    bookmark.show = false;
+                    bookmark.showEdit = false;
                 };
-                ListComponent.prototype.click = function (bookmark) {
+                //TODO merge them into one button
+                ListComponent.prototype.rename = function (bookmark) {
                     var _this = this;
-                    console.log(bookmark.id);
-                    // alert instead of delete directly
-                    chrome.bookmarks.remove(bookmark.id, function () { return chrome.bookmarks.getRecent(20, function (results) {
-                        _this.ngZone.run(function () { _this.bookmarks = results; });
-                    }); });
+                    var newName = prompt("Bookmark Name:", bookmark.title);
+                    if (newName != null) {
+                        chrome.bookmarks.update(bookmark.id, { 'title': newName }, function () {
+                            chrome.bookmarks.getRecent(20, function (results) {
+                                _this.ngZone.run(function () {
+                                    _this.bookmarks = results;
+                                });
+                            });
+                        });
+                    }
+                };
+                ListComponent.prototype.delete = function (bookmark) {
+                    var _this = this;
+                    chrome.bookmarks.remove(bookmark.id, function () {
+                        chrome.bookmarks.getRecent(20, function (results) {
+                            _this.ngZone.run(function () {
+                                _this.bookmarks = results;
+                            });
+                        });
+                    });
                 };
                 return ListComponent;
             }());

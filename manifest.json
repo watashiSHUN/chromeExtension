@@ -4,7 +4,10 @@
     "description": "display most recently added bookmarks",
     "version": "1.0.0",
     "author": "shun",
-    "permissions":["bookmarks","history"],
+    "permissions":[
+        "bookmarks",
+        "history"
+    ],
     "chrome_url_overrides":{
         "newtab":"index.html"
     },

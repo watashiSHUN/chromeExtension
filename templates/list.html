@@ -2,7 +2,10 @@
 <ul>
 <li *ngFor="#bookmark of bookmarks" (mouseenter)="mouseEnter(bookmark)" (mouseleave)="mouseLeave(bookmark)">
         <a href="{{bookmark.url}}">{{bookmark.title}}</a>
-        <button (click)="click(bookmark)" [hidden]="!bookmark.show">remove</button>
+        <span [hidden]="!bookmark.showEdit">
+        <button (click)="delete(bookmark)" >Delete</button>
+        <button (click)="rename(bookmark)" >Rename</button>
+        </span>
 </li>
 </ul>
 

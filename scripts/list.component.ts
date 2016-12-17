@@ -11,18 +11,34 @@ export class ListComponent{
     bookmarks; // even if bookmarks is tracked, it's change still can not be detected
     histories;
     ngZone;
+
     mouseEnter(bookmark){
-        bookmark.show = true;
+        bookmark.showEdit = true;
     }
     mouseLeave(bookmark){
-        bookmark.show = false;
+        bookmark.showEdit = false;
     }
-    click(bookmark){
-        console.log(bookmark.id);
-        // alert instead of delete directly
-        chrome.bookmarks.remove(bookmark.id,()=>chrome.bookmarks.getRecent(20,(results)=>{
-            this.ngZone.run(()=>{this.bookmarks = results;});
-        }));
+    //TODO merge them into one button
+    rename(bookmark){
+        var newName = prompt("Bookmark Name:",bookmark.title);
+        if(newName != null){
+            chrome.bookmarks.update(bookmark.id,{'title':newName},()=>{
+                chrome.bookmarks.getRecent(20,(results)=>{
+                    this.ngZone.run(()=>{
+                        this.bookmarks = results;
+                    })
+                })
+            })
+        }
+    }
+    delete(bookmark){
+        chrome.bookmarks.remove(bookmark.id,()=>{
+            chrome.bookmarks.getRecent(20,(results)=>{
+                this.ngZone.run(()=>{
+                    this.bookmarks = results
+                })
+            })
+        })
     }
     constructor(ngzone:NgZone){
         this.ngZone = ngzone;
