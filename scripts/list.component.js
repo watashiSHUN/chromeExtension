@@ -23,9 +23,14 @@ System.register(["angular2/core"], function (exports_1, context_1) {
                 function ListComponent(ngzone) {
                     var _this = this;
                     this.ngZone = ngzone;
-                    chrome.bookmarks.getRecent(20, function (results) {
-                        ngzone.run(function () { _this.bookmarks = results; });
-                    }); // get last 20 saved bookmarks
+                    this.bookshelves = {};
+                    if (window.localStorage.getItem("filters") == null) {
+                        this.filters = null;
+                    }
+                    else {
+                        this.filters = window.localStorage.getItem("filters").split(" ");
+                    }
+                    this.refresh();
                     // get pages visited from lastweek
                     var millisecondsInOneWeek = 1000 * 60 * 60 * 24 * 7;
                     var oneWeekAgo = (new Date()).getTime() - millisecondsInOneWeek;
@@ -72,9 +77,7 @@ System.register(["angular2/core"], function (exports_1, context_1) {
                     if (newName != null) {
                         chrome.bookmarks.update(bookmark.id, { 'title': newName }, function () {
                             chrome.bookmarks.getRecent(20, function (results) {
-                                _this.ngZone.run(function () {
-                                    _this.bookmarks = results;
-                                });
+                                _this.refresh();
                             });
                         });
                     }
@@ -83,11 +86,24 @@ System.register(["angular2/core"], function (exports_1, context_1) {
                     var _this = this;
                     chrome.bookmarks.remove(bookmark.id, function () {
                         chrome.bookmarks.getRecent(20, function (results) {
-                            _this.ngZone.run(function () {
-                                _this.bookmarks = results;
-                            });
+                            _this.refresh();
                         });
                     });
+                };
+                ListComponent.prototype.refresh = function () {
+                    // TODO FIXME,call back hell, why ()=> arrow function doesn't work
+                    for (var i = 0; i < this.filters.length; i++) {
+                        console.log("search for " + "[" + this.filters[i] + "]");
+                        chrome.bookmarks.search("[" + this.filters[i] + "]", function (i, that) {
+                            return function (results) {
+                                console.log(that.filters[0]);
+                                that.bookshelves[that.filters[i]] = results;
+                                console.log(that.bookshelves);
+                                that.ngZone.run(function () { that.bookShelfNames = Object.keys(that.bookshelves); });
+                                console.log(that.bookShelfNames);
+                            };
+                        }(i, this));
+                    }
                 };
                 return ListComponent;
             }());

@@ -8,8 +8,10 @@ import {Component, NgZone} from 'angular2/core';
 // TODO add input to filter time
 export class ListComponent{
 
-    bookmarks; // even if bookmarks is tracked, it's change still can not be detected
+    bookshelves;
+    bookShelfNames;
     histories;
+    filters;
     ngZone;
 
     mouseEnter(bookmark){
@@ -24,9 +26,7 @@ export class ListComponent{
         if(newName != null){
             chrome.bookmarks.update(bookmark.id,{'title':newName},()=>{
                 chrome.bookmarks.getRecent(20,(results)=>{
-                    this.ngZone.run(()=>{
-                        this.bookmarks = results;
-                    })
+                    this.refresh();
                 })
             })
         }
@@ -34,17 +34,34 @@ export class ListComponent{
     delete(bookmark){
         chrome.bookmarks.remove(bookmark.id,()=>{
             chrome.bookmarks.getRecent(20,(results)=>{
-                this.ngZone.run(()=>{
-                    this.bookmarks = results
-                })
+                this.refresh();
             })
         })
     }
+    refresh(){
+        // TODO FIXME,call back hell, why ()=> arrow function doesn't work
+        for(var i = 0; i < this.filters.length; i++){
+            console.log("search for " + "["+this.filters[i]+"]");
+            chrome.bookmarks.search("["+this.filters[i]+"]",function(i,that){
+                return function(results){
+                    console.log(that.filters[0])
+                    that.bookshelves[that.filters[i]] = results;
+                    console.log(that.bookshelves);
+                    that.ngZone.run(()=>{that.bookShelfNames = Object.keys(that.bookshelves);});
+                    console.log(that.bookShelfNames);
+                }
+            }(i,this));
+        }
+    }
     constructor(ngzone:NgZone){
         this.ngZone = ngzone;
-        chrome.bookmarks.getRecent(20,(results)=>{
-            ngzone.run(()=>{this.bookmarks = results;});
-        });// get last 20 saved bookmarks
+        this.bookshelves = {};
+        if (window.localStorage.getItem("filters") == null){
+            this.filters = null;
+        }else{
+            this.filters = window.localStorage.getItem("filters").split(" ");
+        }
+        this.refresh();
         // get pages visited from lastweek
         var millisecondsInOneWeek:number = 1000*60*60*24*7;
         var oneWeekAgo:number = (new Date()).getTime()-millisecondsInOneWeek;

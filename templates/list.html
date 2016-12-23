@@ -1,6 +1,6 @@
-
-<ul>
-<li *ngFor="#bookmark of bookmarks" (mouseenter)="mouseEnter(bookmark)" (mouseleave)="mouseLeave(bookmark)">
+<div style="display:flex;">
+<ul *ngFor="#bookshelfName of bookShelfNames">
+<li *ngFor="#bookmark of bookshelves[bookshelfName]" (mouseenter)="mouseEnter(bookmark)" (mouseleave)="mouseLeave(bookmark)">
         <a href="{{bookmark.url}}">{{bookmark.title}}</a>
         <span [hidden]="!bookmark.showEdit">
         <button (click)="delete(bookmark)" >Delete</button>
@@ -8,6 +8,7 @@
         </span>
 </li>
 </ul>
+</div>
 
 <ul>
     <li *ngFor="#history of histories">

@@ -10,6 +10,8 @@ TODO list:
 * Add "edit" for bookmarks => rename/delete
 * Remove pakage.json, can't run it locally anyway
 * Add tiles that filter by tag ie [antares] or filter by folder
+* for work, you can trigger cmd and providing arguments
+* add a event listener for history change
 
 DEBUG list:
 * Sometimes, the most common websites won't even show up
