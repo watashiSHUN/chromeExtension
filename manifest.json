@@ -11,5 +11,11 @@
     "chrome_url_overrides":{
         "newtab":"index.html"
     },
+    "content_scripts":[
+        {
+            "matches":["https://www.youtube.com/*"],
+            "js":["youtube.js"]
+        }
+    ],
     "content_security_policy": "script-src 'self' https://code.angularjs.org 'unsafe-eval'; object-src 'self'"
 }
