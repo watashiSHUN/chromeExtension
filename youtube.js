@@ -24,16 +24,18 @@ var actualCode = addSingleXMLRequestCallback + '(' + function() {
     // immediately executed functions
 
     window.onpopstate = function(){ // FIXME forward/backward eventhanlder
-        console.log("on page load");
-        console.log(document.location); // document.location is updated
-        console.log(document.getElementById('watch7-sidebar-contents')); // this is not
-        try{
-            document.getElementById('watch7-sidebar-contents').style.display="none";
-        }catch(e){
-        }
+        console.log("on pop state");
+        console.log(document.location);
+        window.setTimeout(function(){
+            console.log(document.getElementById('watch7-sidebar-contents')); // this is not
+            try{
+                document.getElementById('watch7-sidebar-contents').style.display="none";
+            }catch(e){
+            }
+        },5);
     }
 
-    addSingleXMLRequestCallback( function( xhr ) {// TODO override history.pushstate instead of filtering XMLHttpRequests
+    addSingleXMLRequestCallback( function( xhr ) {
         xhr.onload = function(){
             if(xhr.responseURL.endsWith("spf=navigate")){
                 console.log(xhr.responseURL);
