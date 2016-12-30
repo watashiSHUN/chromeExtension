@@ -12,6 +12,7 @@ TODO list:
 * Add tiles that filter by tag ie [antares] or filter by folder
 * for work, you can trigger cmd and providing arguments
 * add a event listener for history change
+* hover to show actual url in the new tab
 
 DEBUG list:
 * Sometimes, the most common websites won't even show up
