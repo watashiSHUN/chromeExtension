@@ -39,18 +39,22 @@ export class ListComponent{
         })
     }
     refresh(){
-        // TODO FIXME,call back hell, why ()=> arrow function doesn't work
+        // TODO why immediately executed function doesn't work
+        // ts => js issue
         for(var i = 0; i < this.filters.length; i++){
             console.log("search for " + "["+this.filters[i]+"]");
-            chrome.bookmarks.search("["+this.filters[i]+"]",function(i,that){
-                return function(results){
-                    console.log(that.filters[0])
-                    that.bookshelves[that.filters[i]] = results;
-                    console.log(that.bookshelves);
-                    that.ngZone.run(()=>{that.bookShelfNames = Object.keys(that.bookshelves);});
-                    console.log(that.bookShelfNames);
-                }
-            }(i,this));
+            chrome.bookmarks.search("["+this.filters[i]+"]",((i)=>{
+                return (results)=>{
+                    this.bookshelves[this.filters[i]] = results;
+                    this.ngZone.run(()=>{this.bookShelfNames = Object.keys(this.bookshelves);});
+                };
+            })(i));
+            // chrome.bookmarks.search("["+this.filters[i]+"]",(function(i){
+            //     return (results)=>{
+            //         this.bookshelves[this.filters[i]] = results;
+            //         this.ngZone.run(()=>{this.bookShelfNames = Object.keys(this.bookshelves);});
+            //     };
+            // }).bind(this,i)());
         }
     }
     constructor(ngzone:NgZone){

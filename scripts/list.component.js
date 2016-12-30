@@ -91,18 +91,17 @@ System.register(["angular2/core"], function (exports_1, context_1) {
                     });
                 };
                 ListComponent.prototype.refresh = function () {
-                    // TODO FIXME,call back hell, why ()=> arrow function doesn't work
+                    var _this = this;
+                    // TODO why immediately executed function doesn't work
+                    // ts => js issue
                     for (var i = 0; i < this.filters.length; i++) {
                         console.log("search for " + "[" + this.filters[i] + "]");
-                        chrome.bookmarks.search("[" + this.filters[i] + "]", function (i, that) {
+                        chrome.bookmarks.search("[" + this.filters[i] + "]", (function (i) {
                             return function (results) {
-                                console.log(that.filters[0]);
-                                that.bookshelves[that.filters[i]] = results;
-                                console.log(that.bookshelves);
-                                that.ngZone.run(function () { that.bookShelfNames = Object.keys(that.bookshelves); });
-                                console.log(that.bookShelfNames);
+                                _this.bookshelves[_this.filters[i]] = results;
+                                _this.ngZone.run(function () { _this.bookShelfNames = Object.keys(_this.bookshelves); });
                             };
-                        }(i, this));
+                        })(i));
                     }
                 };
                 return ListComponent;
