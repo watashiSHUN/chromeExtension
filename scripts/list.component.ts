@@ -41,14 +41,12 @@ export class ListComponent{
     refresh(){
         // TODO why immediately executed function doesn't work
         // ts => js issue
-        for(var i = 0; i < this.filters.length; i++){
+        for(let i = 0; i < this.filters.length; i++){
             console.log("search for " + "["+this.filters[i]+"]");
-            chrome.bookmarks.search("["+this.filters[i]+"]",((i)=>{
-                return (results)=>{
+            chrome.bookmarks.search("["+this.filters[i]+"]",(results)=>{
                     this.bookshelves[this.filters[i]] = results;
                     this.ngZone.run(()=>{this.bookShelfNames = Object.keys(this.bookshelves);});
-                };
-            })(i));
+                });
             // chrome.bookmarks.search("["+this.filters[i]+"]",(function(i){
             //     return (results)=>{
             //         this.bookshelves[this.filters[i]] = results;

@@ -92,16 +92,24 @@ System.register(["angular2/core"], function (exports_1, context_1) {
                 };
                 ListComponent.prototype.refresh = function () {
                     var _this = this;
+                    var _loop_1 = function (i) {
+                        console.log("search for " + "[" + this_1.filters[i] + "]");
+                        chrome.bookmarks.search("[" + this_1.filters[i] + "]", function (results) {
+                            _this.bookshelves[_this.filters[i]] = results;
+                            _this.ngZone.run(function () { _this.bookShelfNames = Object.keys(_this.bookshelves); });
+                        });
+                        // chrome.bookmarks.search("["+this.filters[i]+"]",(function(i){
+                        //     return (results)=>{
+                        //         this.bookshelves[this.filters[i]] = results;
+                        //         this.ngZone.run(()=>{this.bookShelfNames = Object.keys(this.bookshelves);});
+                        //     };
+                        // }).bind(this,i)());
+                    };
+                    var this_1 = this;
                     // TODO why immediately executed function doesn't work
                     // ts => js issue
                     for (var i = 0; i < this.filters.length; i++) {
-                        console.log("search for " + "[" + this.filters[i] + "]");
-                        chrome.bookmarks.search("[" + this.filters[i] + "]", (function (i) {
-                            return function (results) {
-                                _this.bookshelves[_this.filters[i]] = results;
-                                _this.ngZone.run(function () { _this.bookShelfNames = Object.keys(_this.bookshelves); });
-                            };
-                        })(i));
+                        _loop_1(i);
                     }
                 };
                 return ListComponent;
