@@ -3,7 +3,15 @@ import {Component, NgZone} from 'angular2/core';
 
 @Component({
     selector:'sp-list',
-    templateUrl:'templates/list.html'
+    templateUrl:'templates/list.html',
+    styles:[`.bookmark:hover .buttons{
+                display: inline;
+            }`,
+            `.bookmark .buttons{
+                display: none;
+            }`
+
+        ]
 })
 // TODO add input to filter time
 export class ListComponent{
@@ -14,12 +22,6 @@ export class ListComponent{
     filters;
     ngZone;
 
-    mouseEnter(bookmark){
-        bookmark.showEdit = true;
-    }
-    mouseLeave(bookmark){
-        bookmark.showEdit = false;
-    }
     //TODO merge them into one button
     rename(bookmark){
         var newName = prompt("Bookmark Name:",bookmark.title);

@@ -64,12 +64,6 @@ System.register(["angular2/core"], function (exports_1, context_1) {
                         });
                     });
                 }
-                ListComponent.prototype.mouseEnter = function (bookmark) {
-                    bookmark.showEdit = true;
-                };
-                ListComponent.prototype.mouseLeave = function (bookmark) {
-                    bookmark.showEdit = false;
-                };
                 //TODO merge them into one button
                 ListComponent.prototype.rename = function (bookmark) {
                     var _this = this;
@@ -117,7 +111,10 @@ System.register(["angular2/core"], function (exports_1, context_1) {
             ListComponent = __decorate([
                 core_1.Component({
                     selector: 'sp-list',
-                    templateUrl: 'templates/list.html'
+                    templateUrl: 'templates/list.html',
+                    styles: [".bookmark:hover .buttons{\n                display: inline;\n            }",
+                        ".bookmark .buttons{\n                display: none;\n            }"
+                    ]
                 }),
                 __metadata("design:paramtypes", [core_1.NgZone])
             ], ListComponent);
