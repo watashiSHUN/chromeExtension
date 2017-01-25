@@ -14,7 +14,7 @@
     "content_scripts":[
         {
             "matches":["https://www.youtube.com/*"],
-            "js":["youtube.js"],
+            "js":["DOMchange.js"],
             "run_at":"document_start"
         }
     ],
