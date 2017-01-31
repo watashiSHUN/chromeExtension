@@ -13,7 +13,8 @@ TODO list:
 * for work, you can trigger cmd and providing arguments
 * add a event listener for history change
 * hover to show actual url in the new tab
-* display fav icon
+* ~~display fav icon~~
+* make the list draggable
 
 DEBUG list:
 * Sometimes, the most common websites won't even show up

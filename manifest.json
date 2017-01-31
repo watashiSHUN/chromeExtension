@@ -6,7 +6,8 @@
     "author": "shun",
     "permissions":[
         "bookmarks",
-        "history"
+        "history",
+        "chrome://favicon/size/16@1x/*"
     ],
     "chrome_url_overrides":{
         "newtab":"index.html"

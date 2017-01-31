@@ -1,6 +1,7 @@
 <div style="display:flex;">
 <ul *ngFor="#bookshelfName of bookShelfNames">
 <li class="bookmark" *ngFor="#bookmark of bookshelves[bookshelfName]">
+        <img src="chrome://favicon/size/16@1x/{{bookmark.url}}">
         <a href="{{bookmark.url}}">{{bookmark.title}}</a>
         <span class="buttons">
             <button (click)="delete(bookmark)" >Delete</button>
