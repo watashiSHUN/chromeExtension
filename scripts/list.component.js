@@ -38,11 +38,12 @@ System.register(["angular2/core"], function (exports_1, context_1) {
                     chrome.history.search(searchObject, function (historyItems) {
                         // TODO optimization
                         var dictionary = {}; // not an array
-                        var pattern = /.*:\/\/[^/]*/;
+                        var pattern = /.*:\/\/[^/]*/; // only want the hostname
                         for (var _i = 0, historyItems_1 = historyItems; _i < historyItems_1.length; _i++) {
                             var historyItem = historyItems_1[_i];
                             var matchResults = historyItem.url.match(pattern);
-                            if (matchResults.length == 1) {
+                            if (matchResults != null && matchResults.length == 1) {
+                                // if no matches, the return value is null instead of an array
                                 var rootUrl = matchResults[0];
                                 if (rootUrl in dictionary) {
                                     dictionary[rootUrl] += historyItem.visitCount;
@@ -112,8 +113,13 @@ System.register(["angular2/core"], function (exports_1, context_1) {
                 core_1.Component({
                     selector: 'sp-list',
                     templateUrl: 'templates/list.html',
-                    styles: [".bookmark:hover .buttons{\n                display: inline;\n            }",
-                        ".bookmark .buttons{\n                display: none;\n            }"
+                    styles: [".bookmark:hover a{\n                display: block;\n            }",
+                        ".bookmark .buttons, .bookmark a{\n                display:none\n            }",
+                        ".bookmark{\n                display:flex;\n            }",
+                        ".bookmark .title{\n                display:block;\n            }",
+                        ".bookmark a, .bookmark .title {\n                white-space:pre;\n                overflow:hidden;\n                text-overflow:ellipsis;\n            }",
+                        ".bookmark a{\n                color: hsl(0, 0%, 70%);\n            }",
+                        "#shortcut ul{\n                display:inline-block;\n                width:20%\n            }"
                     ]
                 }),
                 __metadata("design:paramtypes", [core_1.NgZone])

@@ -4,13 +4,30 @@ import {Component, NgZone} from 'angular2/core';
 @Component({
     selector:'sp-list',
     templateUrl:'templates/list.html',
-    styles:[`.bookmark:hover .buttons{
-                display: inline;
+    styles:[`.bookmark:hover a{
+                display: block;
             }`,
-            `.bookmark .buttons{
-                display: none;
+            `.bookmark .buttons, .bookmark a{
+                display:none
+            }`,
+            `.bookmark{
+                display:flex;
+            }`,
+            `.bookmark .title{
+                display:block;
+            }`,
+            `.bookmark a, .bookmark .title {
+                white-space:pre;
+                overflow:hidden;
+                text-overflow:ellipsis;
+            }`,
+            `.bookmark a{
+                color: hsl(0, 0%, 70%);
+            }`,
+            `#shortcut ul{
+                display:inline-block;
+                width:20%
             }`
-
         ]
 })
 // TODO add input to filter time
@@ -73,10 +90,11 @@ export class ListComponent{
         chrome.history.search(searchObject,(historyItems)=>{
             // TODO optimization
             var dictionary = {}; // not an array
-            var pattern = /.*:\/\/[^/]*/;
+            var pattern = /.*:\/\/[^/]*/; // only want the hostname
             for(let historyItem of historyItems){
                 var matchResults = historyItem.url.match(pattern);
-                if(matchResults.length == 1){
+                if(matchResults != null &&  matchResults.length == 1){
+                    // if no matches, the return value is null instead of an array
                     var rootUrl:string = matchResults[0];
                     if (rootUrl in dictionary){
                         dictionary[rootUrl] += historyItem.visitCount;
