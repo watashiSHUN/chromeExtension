@@ -23,10 +23,11 @@ import {Component, NgZone} from 'angular2/core';
             }`,
             `.bookmark a{
                 color: hsl(0, 0%, 70%);
+                flex-shrink:4;
             }`,
             `#shortcut ul{
                 display:inline-block;
-                width:20%
+                width:22%
             }`
         ]
 })
@@ -36,8 +37,54 @@ export class ListComponent{
     bookshelves;
     bookShelfNames;
     histories;
+    displayHistories;
     filters;
     ngZone;
+    timeOut;
+    animationDelay:number = 0; // no animation by default
+
+    updateHistories(key, index, visitCount){
+        // each url has a visitCount
+        if(index == this.histories.length){
+            // newly added items
+            setTimeout(()=>{
+                this.displayHistories.push([key,visitCount]);
+                this.ngZone.run(()=>{});},
+                this.timeOut += this.animationDelay
+            )
+            this.histories.push([key,visitCount])
+        }else{
+            setTimeout(()=>{
+                this.displayHistories[index][1] += visitCount;
+                this.ngZone.run(()=>{});},
+                this.timeOut += this.animationDelay
+            )
+            this.histories[index][1] += visitCount;
+        }
+        // pop up
+        let returnV = 0;
+        for(let i=index-1; i>=0; i--){
+            //TODO linked list will be easier
+            if(this.histories[i][1] >= this.histories[i+1][1]){
+                returnV = i+1;
+                break;
+            }else{
+                setTimeout(()=>{
+                    let temp = this.displayHistories[i];
+                    this.displayHistories[i] = this.displayHistories[i+1];
+                    this.displayHistories[i+1] = temp;
+                    this.ngZone.run(()=>{});},
+                    this.timeOut += this.animationDelay
+                )
+                let temp = this.histories[i];
+                this.histories[i] = this.histories[i+1];
+                this.histories[i+1] = temp;
+            }
+        }
+        //ngrun to update UI
+        // return newindex
+        return returnV;
+    }
 
     //TODO merge them into one button
     rename(bookmark){
@@ -77,6 +124,9 @@ export class ListComponent{
     constructor(ngzone:NgZone){
         this.ngZone = ngzone;
         this.bookshelves = {};
+        this.histories = [];
+        this.displayHistories = [];
+        this.timeOut = 0;
         if (window.localStorage.getItem("filters") == null){
             this.filters = null;
         }else{
@@ -97,23 +147,13 @@ export class ListComponent{
                     // if no matches, the return value is null instead of an array
                     var rootUrl:string = matchResults[0];
                     if (rootUrl in dictionary){
-                        dictionary[rootUrl] += historyItem.visitCount;
+                        dictionary[rootUrl] = this.updateHistories(rootUrl,dictionary[rootUrl],historyItem.visitCount);
                     }else{
-                        dictionary[rootUrl] = historyItem.visitCount;
+                        dictionary[rootUrl] = this.updateHistories(rootUrl,this.histories.length,historyItem.visitCount);
                     }
+                    //this.ngZone.run(()=>{console.log(this.histories.length)});
                 }
             }
-            // insertion sort
-            var decendingArray = []
-            for (var key in dictionary){
-                var count = dictionary[key];
-                decendingArray.push([key,count])
-            }
-            decendingArray.sort((a,b)=>b[1]-a[1]);
-            ngzone.run(()=>{
-                this.histories = decendingArray;
-            });
         });
     }
-
 }

@@ -7,7 +7,7 @@ TODO list:
 * Dict.youdao.com get your most recently vocabulary list (from the url)
 * Google.com get your keywords (from the url)
 * Maynot apply here, but when you have multiple tabs open, organize them as groups with the same root url?
-* Add "edit" for bookmarks => rename/delete
+* double click to rename the bookmark, red X mark to delete
 * Remove pakage.json, can't run it locally anyway
 * Add tiles that filter by tag ie [antares] or filter by folder
 * for work, you can trigger cmd and providing arguments
@@ -15,6 +15,7 @@ TODO list:
 * ~~hover to show actual url in the new tab~~
 * ~~display fav icon~~
 * make the list draggable
+* if its a new window => show animation, else hide
 
 DEBUG list:
 * ~~Sometimes, the most common websites won't even show up~~

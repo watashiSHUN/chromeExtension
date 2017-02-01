@@ -13,7 +13,7 @@
 </div>
 
 <ul>
-    <li *ngFor="#history of histories">
-        {{history}}
+    <li *ngFor="#history of displayHistories">
+        {{history[0]}} => {{history[1]}}
     </li>
 </ul>

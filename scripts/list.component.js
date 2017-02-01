@@ -22,8 +22,12 @@ System.register(["angular2/core"], function (exports_1, context_1) {
             ListComponent = (function () {
                 function ListComponent(ngzone) {
                     var _this = this;
+                    this.animationDelay = 0; // no animation by default
                     this.ngZone = ngzone;
                     this.bookshelves = {};
+                    this.histories = [];
+                    this.displayHistories = [];
+                    this.timeOut = 0;
                     if (window.localStorage.getItem("filters") == null) {
                         this.filters = null;
                     }
@@ -46,25 +50,63 @@ System.register(["angular2/core"], function (exports_1, context_1) {
                                 // if no matches, the return value is null instead of an array
                                 var rootUrl = matchResults[0];
                                 if (rootUrl in dictionary) {
-                                    dictionary[rootUrl] += historyItem.visitCount;
+                                    dictionary[rootUrl] = _this.updateHistories(rootUrl, dictionary[rootUrl], historyItem.visitCount);
                                 }
                                 else {
-                                    dictionary[rootUrl] = historyItem.visitCount;
+                                    dictionary[rootUrl] = _this.updateHistories(rootUrl, _this.histories.length, historyItem.visitCount);
                                 }
                             }
                         }
-                        // insertion sort
-                        var decendingArray = [];
-                        for (var key in dictionary) {
-                            var count = dictionary[key];
-                            decendingArray.push([key, count]);
-                        }
-                        decendingArray.sort(function (a, b) { return b[1] - a[1]; });
-                        ngzone.run(function () {
-                            _this.histories = decendingArray;
-                        });
                     });
                 }
+                ListComponent.prototype.updateHistories = function (key, index, visitCount) {
+                    var _this = this;
+                    // each url has a visitCount
+                    if (index == this.histories.length) {
+                        // newly added items
+                        setTimeout(function () {
+                            _this.displayHistories.push([key, visitCount]);
+                            _this.ngZone.run(function () { });
+                        }, this.timeOut += this.animationDelay);
+                        this.histories.push([key, visitCount]);
+                    }
+                    else {
+                        setTimeout(function () {
+                            _this.displayHistories[index][1] += visitCount;
+                            _this.ngZone.run(function () { });
+                        }, this.timeOut += this.animationDelay);
+                        this.histories[index][1] += visitCount;
+                    }
+                    // pop up
+                    var returnV = 0;
+                    var _loop_1 = function (i) {
+                        //TODO linked list will be easier
+                        if (this_1.histories[i][1] >= this_1.histories[i + 1][1]) {
+                            returnV = i + 1;
+                            return "break";
+                        }
+                        else {
+                            setTimeout(function () {
+                                var temp = _this.displayHistories[i];
+                                _this.displayHistories[i] = _this.displayHistories[i + 1];
+                                _this.displayHistories[i + 1] = temp;
+                                _this.ngZone.run(function () { });
+                            }, this_1.timeOut += this_1.animationDelay);
+                            var temp = this_1.histories[i];
+                            this_1.histories[i] = this_1.histories[i + 1];
+                            this_1.histories[i + 1] = temp;
+                        }
+                    };
+                    var this_1 = this;
+                    for (var i = index - 1; i >= 0; i--) {
+                        var state_1 = _loop_1(i);
+                        if (state_1 === "break")
+                            break;
+                    }
+                    //ngrun to update UI
+                    // return newindex
+                    return returnV;
+                };
                 //TODO merge them into one button
                 ListComponent.prototype.rename = function (bookmark) {
                     var _this = this;
@@ -87,9 +129,9 @@ System.register(["angular2/core"], function (exports_1, context_1) {
                 };
                 ListComponent.prototype.refresh = function () {
                     var _this = this;
-                    var _loop_1 = function (i) {
-                        console.log("search for " + "[" + this_1.filters[i] + "]");
-                        chrome.bookmarks.search("[" + this_1.filters[i] + "]", function (results) {
+                    var _loop_2 = function (i) {
+                        console.log("search for " + "[" + this_2.filters[i] + "]");
+                        chrome.bookmarks.search("[" + this_2.filters[i] + "]", function (results) {
                             _this.bookshelves[_this.filters[i]] = results;
                             _this.ngZone.run(function () { _this.bookShelfNames = Object.keys(_this.bookshelves); });
                         });
@@ -100,11 +142,11 @@ System.register(["angular2/core"], function (exports_1, context_1) {
                         //     };
                         // }).bind(this,i)());
                     };
-                    var this_1 = this;
+                    var this_2 = this;
                     // TODO why immediately executed function doesn't work
                     // ts => js issue
                     for (var i = 0; i < this.filters.length; i++) {
-                        _loop_1(i);
+                        _loop_2(i);
                     }
                 };
                 return ListComponent;
@@ -118,8 +160,8 @@ System.register(["angular2/core"], function (exports_1, context_1) {
                         ".bookmark{\n                display:flex;\n            }",
                         ".bookmark .title{\n                display:block;\n            }",
                         ".bookmark a, .bookmark .title {\n                white-space:pre;\n                overflow:hidden;\n                text-overflow:ellipsis;\n            }",
-                        ".bookmark a{\n                color: hsl(0, 0%, 70%);\n            }",
-                        "#shortcut ul{\n                display:inline-block;\n                width:20%\n            }"
+                        ".bookmark a{\n                color: hsl(0, 0%, 70%);\n                flex-shrink:4;\n            }",
+                        "#shortcut ul{\n                display:inline-block;\n                width:22%\n            }"
                     ]
                 }),
                 __metadata("design:paramtypes", [core_1.NgZone])
