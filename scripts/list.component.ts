@@ -41,25 +41,17 @@ export class ListComponent{
     filters;
     ngZone;
     timeOut;
-    animationDelay:number = 0; // no animation by default
+    animationDelay:number = 40; // no animation by default
 
     updateHistories(key, index, visitCount){
         // each url has a visitCount
         if(index == this.histories.length){
             // newly added items
-            setTimeout(()=>{
-                this.displayHistories.push([key,visitCount]);
-                this.ngZone.run(()=>{});},
-                this.timeOut += this.animationDelay
-            )
             this.histories.push([key,visitCount])
+            this.ngZone.run(()=>setTimeout(()=>this.displayHistories.push([key,visitCount]),this.timeOut += this.animationDelay));
         }else{
-            setTimeout(()=>{
-                this.displayHistories[index][1] += visitCount;
-                this.ngZone.run(()=>{});},
-                this.timeOut += this.animationDelay
-            )
             this.histories[index][1] += visitCount;
+            this.ngZone.run(()=>setTimeout(()=>this.displayHistories[index][1] += visitCount,this.timeOut+=this.animationDelay));
         }
         // pop up
         let returnV = 0;
@@ -69,16 +61,14 @@ export class ListComponent{
                 returnV = i+1;
                 break;
             }else{
-                setTimeout(()=>{
-                    let temp = this.displayHistories[i];
-                    this.displayHistories[i] = this.displayHistories[i+1];
-                    this.displayHistories[i+1] = temp;
-                    this.ngZone.run(()=>{});},
-                    this.timeOut += this.animationDelay
-                )
                 let temp = this.histories[i];
                 this.histories[i] = this.histories[i+1];
                 this.histories[i+1] = temp;
+                this.ngZone.run(()=>setTimeout(()=>{
+                    let temp = this.displayHistories[i];
+                    this.displayHistories[i] = this.displayHistories[i+1];
+                    this.displayHistories[i+1] = temp;
+                },this.timeOut += this.animationDelay))
             }
         }
         //ngrun to update UI
@@ -140,7 +130,7 @@ export class ListComponent{
         chrome.history.search(searchObject,(historyItems)=>{
             // TODO optimization
             var dictionary = {}; // not an array
-            var pattern = /.*:\/\/[^/]*/; // only want the hostname
+            var pattern = /https?:\/\/[^/]*/; // only want the hostname
             for(let historyItem of historyItems){
                 var matchResults = historyItem.url.match(pattern);
                 if(matchResults != null &&  matchResults.length == 1){

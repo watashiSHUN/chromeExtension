@@ -1,4 +1,7 @@
 # chromeExtension => override the new tab
+MATURED functionalities:
+* block youtube feed, you can still see them after you finish watching your videos
+
 TODO list:
 * Display most recently added bookmarks, as google default bookmarks does not have a sort, and without openning the bookmark manager...you need to navigate till the bottom of the list...this takes a while for a person like me who likes to bookmark pages and sometime never come back to it
 * Display where you spend most of your time online (for now it shows how many visit to each root url you entered)
@@ -15,7 +18,7 @@ TODO list:
 * ~~hover to show actual url in the new tab~~
 * ~~display fav icon~~
 * make the list draggable
-* if its a new window => show animation, else hide
+* weekly use static history, daily use animation
 
 DEBUG list:
 * ~~Sometimes, the most common websites won't even show up~~

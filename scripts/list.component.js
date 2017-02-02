@@ -22,7 +22,7 @@ System.register(["angular2/core"], function (exports_1, context_1) {
             ListComponent = (function () {
                 function ListComponent(ngzone) {
                     var _this = this;
-                    this.animationDelay = 0; // no animation by default
+                    this.animationDelay = 40; // no animation by default
                     this.ngZone = ngzone;
                     this.bookshelves = {};
                     this.histories = [];
@@ -42,7 +42,7 @@ System.register(["angular2/core"], function (exports_1, context_1) {
                     chrome.history.search(searchObject, function (historyItems) {
                         // TODO optimization
                         var dictionary = {}; // not an array
-                        var pattern = /.*:\/\/[^/]*/; // only want the hostname
+                        var pattern = /https?:\/\/[^/]*/; // only want the hostname
                         for (var _i = 0, historyItems_1 = historyItems; _i < historyItems_1.length; _i++) {
                             var historyItem = historyItems_1[_i];
                             var matchResults = historyItem.url.match(pattern);
@@ -64,18 +64,12 @@ System.register(["angular2/core"], function (exports_1, context_1) {
                     // each url has a visitCount
                     if (index == this.histories.length) {
                         // newly added items
-                        setTimeout(function () {
-                            _this.displayHistories.push([key, visitCount]);
-                            _this.ngZone.run(function () { });
-                        }, this.timeOut += this.animationDelay);
                         this.histories.push([key, visitCount]);
+                        this.ngZone.run(function () { return setTimeout(function () { return _this.displayHistories.push([key, visitCount]); }, _this.timeOut += _this.animationDelay); });
                     }
                     else {
-                        setTimeout(function () {
-                            _this.displayHistories[index][1] += visitCount;
-                            _this.ngZone.run(function () { });
-                        }, this.timeOut += this.animationDelay);
                         this.histories[index][1] += visitCount;
+                        this.ngZone.run(function () { return setTimeout(function () { return _this.displayHistories[index][1] += visitCount; }, _this.timeOut += _this.animationDelay); });
                     }
                     // pop up
                     var returnV = 0;
@@ -86,15 +80,14 @@ System.register(["angular2/core"], function (exports_1, context_1) {
                             return "break";
                         }
                         else {
-                            setTimeout(function () {
-                                var temp = _this.displayHistories[i];
-                                _this.displayHistories[i] = _this.displayHistories[i + 1];
-                                _this.displayHistories[i + 1] = temp;
-                                _this.ngZone.run(function () { });
-                            }, this_1.timeOut += this_1.animationDelay);
                             var temp = this_1.histories[i];
                             this_1.histories[i] = this_1.histories[i + 1];
                             this_1.histories[i + 1] = temp;
+                            this_1.ngZone.run(function () { return setTimeout(function () {
+                                var temp = _this.displayHistories[i];
+                                _this.displayHistories[i] = _this.displayHistories[i + 1];
+                                _this.displayHistories[i + 1] = temp;
+                            }, _this.timeOut += _this.animationDelay); });
                         }
                     };
                     var this_1 = this;
