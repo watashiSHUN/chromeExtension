@@ -71,7 +71,6 @@ export class ListComponent{
                 },this.timeOut += this.animationDelay))
             }
         }
-        //ngrun to update UI
         // return newindex
         return returnV;
     }
@@ -97,11 +96,14 @@ export class ListComponent{
     refresh(){
         // TODO why immediately executed function doesn't work
         // ts => js issue
+        let semaphore = 0;
         for(let i = 0; i < this.filters.length; i++){
             console.log("search for " + "["+this.filters[i]+"]");
             chrome.bookmarks.search("["+this.filters[i]+"]",(results)=>{
                     this.bookshelves[this.filters[i]] = results;
-                    this.ngZone.run(()=>{this.bookShelfNames = Object.keys(this.bookshelves);});
+                    if(++semaphore == this.filters.length){
+                        this.ngZone.run(()=>{this.bookShelfNames = Object.keys(this.bookshelves);});
+                    }
                 });
             // chrome.bookmarks.search("["+this.filters[i]+"]",(function(i){
             //     return (results)=>{
@@ -111,6 +113,10 @@ export class ListComponent{
             // }).bind(this,i)());
         }
     }
+    // TODO delete and rename, we don't need to search for everything
+    // refreshSingleBookshelf(name){
+    //
+    // }
     constructor(ngzone:NgZone){
         this.ngZone = ngzone;
         this.bookshelves = {};
@@ -141,7 +147,6 @@ export class ListComponent{
                     }else{
                         dictionary[rootUrl] = this.updateHistories(rootUrl,this.histories.length,historyItem.visitCount);
                     }
-                    //this.ngZone.run(()=>{console.log(this.histories.length)});
                 }
             }
         });

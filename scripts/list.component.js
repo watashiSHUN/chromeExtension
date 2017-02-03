@@ -20,6 +20,10 @@ System.register(["angular2/core"], function (exports_1, context_1) {
         execute: function () {
             // TODO add input to filter time
             ListComponent = (function () {
+                // TODO delete and rename, we don't need to search for everything
+                // refreshSingleBookshelf(name){
+                //
+                // }
                 function ListComponent(ngzone) {
                     var _this = this;
                     this.animationDelay = 40; // no animation by default
@@ -96,7 +100,6 @@ System.register(["angular2/core"], function (exports_1, context_1) {
                         if (state_1 === "break")
                             break;
                     }
-                    //ngrun to update UI
                     // return newindex
                     return returnV;
                 };
@@ -122,11 +125,16 @@ System.register(["angular2/core"], function (exports_1, context_1) {
                 };
                 ListComponent.prototype.refresh = function () {
                     var _this = this;
+                    // TODO why immediately executed function doesn't work
+                    // ts => js issue
+                    var semaphore = 0;
                     var _loop_2 = function (i) {
                         console.log("search for " + "[" + this_2.filters[i] + "]");
                         chrome.bookmarks.search("[" + this_2.filters[i] + "]", function (results) {
                             _this.bookshelves[_this.filters[i]] = results;
-                            _this.ngZone.run(function () { _this.bookShelfNames = Object.keys(_this.bookshelves); });
+                            if (++semaphore == _this.filters.length) {
+                                _this.ngZone.run(function () { _this.bookShelfNames = Object.keys(_this.bookshelves); });
+                            }
                         });
                         // chrome.bookmarks.search("["+this.filters[i]+"]",(function(i){
                         //     return (results)=>{
@@ -136,8 +144,6 @@ System.register(["angular2/core"], function (exports_1, context_1) {
                         // }).bind(this,i)());
                     };
                     var this_2 = this;
-                    // TODO why immediately executed function doesn't work
-                    // ts => js issue
                     for (var i = 0; i < this.filters.length; i++) {
                         _loop_2(i);
                     }
