@@ -4,32 +4,7 @@ import {Component, NgZone} from 'angular2/core';
 @Component({
     selector:'sp-list',
     templateUrl:'templates/list.html',
-    styles:[`.bookmark:hover a{
-                display: block;
-            }`,
-            `.bookmark .buttons, .bookmark a{
-                display:none
-            }`,
-            `.bookmark{
-                display:flex;
-            }`,
-            `.bookmark .title{
-                display:block;
-            }`,
-            `.bookmark a, .bookmark .title {
-                white-space:pre;
-                overflow:hidden;
-                text-overflow:ellipsis;
-            }`,
-            `.bookmark a{
-                color: hsl(0, 0%, 70%);
-                flex-shrink:4;
-            }`,
-            `#shortcut ul{
-                display:inline-block;
-                width:22%
-            }`
-        ]
+    styleUrls:['templates/list.css']
 })
 // TODO add input to filter time
 export class ListComponent{

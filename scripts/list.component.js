@@ -154,14 +154,7 @@ System.register(["angular2/core"], function (exports_1, context_1) {
                 core_1.Component({
                     selector: 'sp-list',
                     templateUrl: 'templates/list.html',
-                    styles: [".bookmark:hover a{\n                display: block;\n            }",
-                        ".bookmark .buttons, .bookmark a{\n                display:none\n            }",
-                        ".bookmark{\n                display:flex;\n            }",
-                        ".bookmark .title{\n                display:block;\n            }",
-                        ".bookmark a, .bookmark .title {\n                white-space:pre;\n                overflow:hidden;\n                text-overflow:ellipsis;\n            }",
-                        ".bookmark a{\n                color: hsl(0, 0%, 70%);\n                flex-shrink:4;\n            }",
-                        "#shortcut ul{\n                display:inline-block;\n                width:22%\n            }"
-                    ]
+                    styleUrls: ['templates/list.css']
                 }),
                 __metadata("design:paramtypes", [core_1.NgZone])
             ], ListComponent);
