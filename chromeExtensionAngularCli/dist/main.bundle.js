@@ -40,6 +40,7 @@ __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_0__angular_platform_browser_dyna
 
 "use strict";
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__angular_core__ = __webpack_require__(0);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__angular_platform_browser__ = __webpack_require__(136);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return AppComponent; });
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
@@ -51,14 +52,16 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 
+
 var AppComponent = (function () {
     // TODO delete and rename, we don't need to search for everything
     // refreshSingleBookshelf(name){
     //
     // }
-    function AppComponent(ngzone) {
+    function AppComponent(ngzone, sanitizer) {
         var _this = this;
         this.animationDelay = 40; // no animation by default
+        this.sanitizer = sanitizer;
         this.ngZone = ngzone;
         this.bookshelves = {};
         this.histories = [];
@@ -95,6 +98,9 @@ var AppComponent = (function () {
             }
         });
     }
+    AppComponent.prototype.imageURL = function (bookmark) {
+        return this.sanitizer.bypassSecurityTrustUrl('chrome://favicon/size/16@1x/' + bookmark.url);
+    };
     AppComponent.prototype.updateHistories = function (key, index, visitCount) {
         var _this = this;
         // each url has a visitCount
@@ -179,10 +185,10 @@ var AppComponent = (function () {
             template: __webpack_require__(608),
             styles: [__webpack_require__(607)]
         }), 
-        __metadata('design:paramtypes', [(typeof (_a = typeof __WEBPACK_IMPORTED_MODULE_0__angular_core__["I" /* NgZone */] !== 'undefined' && __WEBPACK_IMPORTED_MODULE_0__angular_core__["I" /* NgZone */]) === 'function' && _a) || Object])
+        __metadata('design:paramtypes', [(typeof (_a = typeof __WEBPACK_IMPORTED_MODULE_0__angular_core__["I" /* NgZone */] !== 'undefined' && __WEBPACK_IMPORTED_MODULE_0__angular_core__["I" /* NgZone */]) === 'function' && _a) || Object, (typeof (_b = typeof __WEBPACK_IMPORTED_MODULE_1__angular_platform_browser__["c" /* DomSanitizer */] !== 'undefined' && __WEBPACK_IMPORTED_MODULE_1__angular_platform_browser__["c" /* DomSanitizer */]) === 'function' && _b) || Object])
     ], AppComponent);
     return AppComponent;
-    var _a;
+    var _a, _b;
 }());
 //# sourceMappingURL=D:/chromeExtension/chromeExtensionAngularCli/src/app.component.js.map
 
@@ -192,7 +198,7 @@ var AppComponent = (function () {
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__angular_platform_browser__ = __webpack_require__(191);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__angular_platform_browser__ = __webpack_require__(136);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__angular_core__ = __webpack_require__(0);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__angular_forms__ = __webpack_require__(421);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__angular_http__ = __webpack_require__(427);
@@ -262,7 +268,7 @@ module.exports = ".bookmark:hover a{\r\n    display: block;\r\n}\r\n.bookmark .b
 /***/ 608:
 /***/ (function(module, exports) {
 
-module.exports = "<div id=\"shortcut\">\n<ul *ngFor=\"let bookshelfName of bookShelfNames\">\n<div>[{{bookshelfName}}]</div>\n<li class=\"bookmark\" *ngFor=\"let bookmark of bookshelves[bookshelfName]\">\n        <img src=\"chrome://favicon/size/16@1x/{{bookmark.url}}\" width=\"16\" height=\"16\">\n        <span class=\"title\">{{bookmark.title.substring(bookshelfName.length+2)}}</span>\n        <a href=\"{{bookmark.url}}\">{{bookmark.url}}</a>\n        <span class=\"buttons\">\n            <button (click)=\"delete(bookmark)\" >Delete</button>\n            <button (click)=\"rename(bookmark)\" >Rename</button>\n        </span>\n</li>\n</ul>\n</div>\n\n<ul>\n    <li *ngFor=\"let history of displayHistories\">\n        {{history[0]}} => {{history[1]}}\n    </li>\n</ul>\n"
+module.exports = "<div id=\"shortcut\">\n<ul *ngFor=\"let bookshelfName of bookShelfNames\">\n<div>[{{bookshelfName}}]</div>\n<li class=\"bookmark\" *ngFor=\"let bookmark of bookshelves[bookshelfName]\">\n        <img [src]=\"imageURL(bookmark)\" width=\"16\" height=\"16\">\r\n        <span class=\"title\">{{bookmark.title.substring(bookshelfName.length+2)}}</span>\n        <a href=\"{{bookmark.url}}\">{{bookmark.url}}</a>\n        <span class=\"buttons\">\n            <button (click)=\"delete(bookmark)\" >Delete</button>\n            <button (click)=\"rename(bookmark)\" >Rename</button>\n        </span>\n</li>\n</ul>\n</div>\n\n<ul>\n    <li *ngFor=\"let history of displayHistories\">\n        {{history[0]}} => {{history[1]}}\n    </li>\n</ul>\n"
 
 /***/ }),
 

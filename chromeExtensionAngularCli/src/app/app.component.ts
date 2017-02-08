@@ -1,4 +1,5 @@
 import { Component, NgZone } from '@angular/core';
+import { DomSanitizer } from '@angular/platform-browser';
 
 @Component({
   selector: 'app-root',
@@ -13,9 +14,14 @@ export class AppComponent {
     displayHistories;
     filters;
     ngZone;
+    sanitizer;
     timeOut;
     readonly animationDelay:number = 40; // no animation by default
 
+    imageURL(bookmark){
+        return this.sanitizer.bypassSecurityTrustUrl('chrome://favicon/size/16@1x/' + bookmark.url);
+    }
+    
     updateHistories(key, index, visitCount){
         // each url has a visitCount
         if(index == this.histories.length){
@@ -90,7 +96,8 @@ export class AppComponent {
     // refreshSingleBookshelf(name){
     //
     // }
-    constructor(ngzone:NgZone){
+    constructor(ngzone:NgZone, sanitizer:DomSanitizer){
+        this.sanitizer = sanitizer;
         this.ngZone = ngzone;
         this.bookshelves = {};
         this.histories = [];
