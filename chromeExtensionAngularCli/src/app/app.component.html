@@ -1,0 +1,20 @@
+<div id="shortcut">
+<ul *ngFor="let bookshelfName of bookShelfNames">
+<div>[{{bookshelfName}}]</div>
+<li class="bookmark" *ngFor="let bookmark of bookshelves[bookshelfName]">
+        <img src="chrome://favicon/size/16@1x/{{bookmark.url}}" width="16" height="16">
+        <span class="title">{{bookmark.title.substring(bookshelfName.length+2)}}</span>
+        <a href="{{bookmark.url}}">{{bookmark.url}}</a>
+        <span class="buttons">
+            <button (click)="delete(bookmark)" >Delete</button>
+            <button (click)="rename(bookmark)" >Rename</button>
+        </span>
+</li>
+</ul>
+</div>
+
+<ul>
+    <li *ngFor="let history of displayHistories">
+        {{history[0]}} => {{history[1]}}
+    </li>
+</ul>

@@ -1,13 +1,11 @@
-///<reference path="../typings/chrome/chrome.d.ts" />
-import {Component, NgZone} from 'angular2/core';
+import { Component, NgZone } from '@angular/core';
 
 @Component({
-    selector:'sp-list',
-    templateUrl:'templates/list.html',
-    styleUrls:['templates/list.css']
+  selector: 'app-root',
+  templateUrl: './app.component.html',
+  styleUrls: ['./app.component.css']
 })
-// TODO add input to filter time
-export class ListComponent{
+export class AppComponent {
 
     bookshelves;
     bookShelfNames;
@@ -99,7 +97,7 @@ export class ListComponent{
         this.displayHistories = [];
         this.timeOut = 0;
         if (window.localStorage.getItem("filters") == null){
-            this.filters = null;
+            this.filters = []; // if we put null, refresh for loop will fail
         }else{
             this.filters = window.localStorage.getItem("filters").split(" ");
         }

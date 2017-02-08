@@ -1,0 +1,23 @@
+{
+    "manifest_version": 2,
+    "name": "newtab Extension",
+    "description": "display most recently added bookmarks",
+    "version": "1.0.0",
+    "author": "shun",
+    "permissions":[
+        "bookmarks",
+        "history",
+        "chrome://favicon/size/16@1x/*"
+    ],
+    "chrome_url_overrides":{
+        "newtab":"index.html"
+    },
+    "content_scripts":[
+        {
+            "matches":["https://www.youtube.com/*"],
+            "js":["DOMchange.js"],
+            "run_at":"document_start"
+        }
+    ],
+    "content_security_policy": "script-src 'self' https://code.angularjs.org 'unsafe-eval'; object-src 'self'"
+}
