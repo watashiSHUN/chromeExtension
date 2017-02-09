@@ -1,0 +1,21 @@
+<tabset id="shortcut">
+    <tab heading="[{{bookshelfName}}]" *ngFor="let bookshelfName of bookShelfNames" >
+    <ul>
+    <li class="bookmark" *ngFor="let bookmark of bookshelves[bookshelfName]">
+            <img [src]="imageURL(bookmark)" width="16" height="16">
+            <span class="title">{{bookmark.title.substring(bookshelfName.length+2)}}</span>
+            <a href="{{bookmark.url}}">{{bookmark.url}}</a>
+            <span class="buttons">
+                <button (click)="delete(bookmark)" >Delete</button>
+                <button (click)="rename(bookmark)" >Rename</button>
+            </span>
+    </li>
+    </ul>
+    </tab>
+</tabset>
+
+<ul>
+    <li *ngFor="let history of displayHistories">
+        {{history[0]}} => {{history[1]}}
+    </li>
+</ul>
