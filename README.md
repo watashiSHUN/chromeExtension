@@ -10,7 +10,7 @@ TODO list:
 * Dict.youdao.com get your most recently vocabulary list (from the url)
 * Google.com get your keywords (from the url)
 * May not apply here, but when you have multiple tabs open, organize them as groups with the same root url?
-* double click to rename the bookmark, red X mark to delete
+* ~~double click to rename the bookmark~~, red X mark to delete
 * ~~Add tiles that filter by tag ie [antares] or filter by folder~~
 * for work, you can trigger cmd and providing arguments
 * ~~hover to show actual url in the new tab~~
@@ -20,3 +20,7 @@ TODO list:
 
 DEBUG list:
 * Sometimes, the most common websites won't even show up
+* name is displayed according to number of letters, but uppercase will occupy more...
+
+Developer Commands:
+run `\chromeExtension>ng build -bh /dist/ -watch` (the basehref flag is a temporary workaround until angular-cli release its new build)

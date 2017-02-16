@@ -1,24 +1,17 @@
 .bookmark:hover a{
     display: block;
 }
-.bookmark .buttons, .bookmark a{
+.bookmark a{
+    color: hsl(0, 0%, 70%);
+    flex-shrink:4;
     display:none
 }
 .bookmark{
     display:flex;
 }
-.bookmark .title{
-    display:block;
-}
 .bookmark a, .bookmark .title {
+    border: none;
     white-space:pre;
     overflow:hidden;
     text-overflow:ellipsis;
-}
-.bookmark a{
-    color: hsl(0, 0%, 70%);
-    flex-shrink:4;
-}
-#shortcut ul{
-    display:inline-block;
 }

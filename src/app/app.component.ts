@@ -18,6 +18,47 @@ export class AppComponent {
     timeOut;
     readonly animationDelay:number = 40; // no animation by default
 
+    startEditing(mouseEvent,bookmark, bookshelfName){
+        let inputElement = mouseEvent.srcElement;
+        let originalString = bookmark.title.substring(bookshelfName.length+2);
+        let tag = bookmark.title.substring(0,bookshelfName.length+2);
+
+        // define a helper function, so that it can use this element in the scope
+        var finishEditing = function(keyEvent){
+            console.log(keyEvent);
+            let keyCode = keyEvent.keyCode;
+            if(keyCode == '13'){
+                // rename the bookmark
+                if(inputElement.value != originalString){
+                    // rename
+                    let newName = tag + inputElement.value;
+                    bookmark.title = newName; // TODO determine what's the performance impact
+                                              // using angular update, if high, we can ignore this...just update the size
+                    chrome.bookmarks.update(bookmark.id,{'title':newName});
+                }
+                // this is just registring, the event will happen a lot later
+                inputElement.setAttribute("readonly","");
+                inputElement.removeEventListener("blur", ignoreEditing);
+                inputElement.removeEventListener("keypress",finishEditing);
+                // XXX removeEventListener only works against addEventListener
+            }
+        }
+
+        var ignoreEditing = function(focusEvent){
+            console.log(focusEvent);
+            inputElement.value = originalString;
+            inputElement.setAttribute("readonly","");
+            inputElement.removeEventListener("blur", ignoreEditing);
+            inputElement.removeEventListener("keypress",finishEditing);
+        }
+
+        inputElement.removeAttribute("readonly"); // allow editing
+        inputElement.select();
+        // XXX inputElement select all text area
+        inputElement.addEventListener("blur",ignoreEditing);
+        inputElement.addEventListener("keypress",finishEditing);
+    }
+
     imageURL(bookmark){
         return this.sanitizer.bypassSecurityTrustUrl('chrome://favicon/size/16@1x/' + bookmark.url);
     }
@@ -53,18 +94,7 @@ export class AppComponent {
         // return newindex
         return returnV;
     }
-
-    //TODO merge them into one button
-    rename(bookmark){
-        var newName = prompt("Bookmark Name:",bookmark.title);
-        if(newName != null){
-            chrome.bookmarks.update(bookmark.id,{'title':newName},()=>{
-                chrome.bookmarks.getRecent(20,(results)=>{
-                    this.refresh();
-                })
-            })
-        }
-    }
+    // TODO implement this with an icon
     delete(bookmark){
         chrome.bookmarks.remove(bookmark.id,()=>{
             chrome.bookmarks.getRecent(20,(results)=>{
@@ -121,7 +151,7 @@ export class AppComponent {
                 var matchResults = historyItem.url.match(pattern);
                 if(matchResults != null &&  matchResults.length == 1){
                     // if no matches, the return value is null instead of an array
-                    console.log(historyItem);
+                    // console.log(historyItem);
                     var rootUrl:string = matchResults[0];
                     if (rootUrl in dictionary){
                         dictionary[rootUrl] = this.updateHistories(rootUrl,dictionary[rootUrl],historyItem.visitCount);

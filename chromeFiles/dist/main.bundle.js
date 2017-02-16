@@ -31,7 +31,7 @@ if (__WEBPACK_IMPORTED_MODULE_2__environments_environment__["a" /* environment *
     __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_1__angular_core__["a" /* enableProdMode */])();
 }
 __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_0__angular_platform_browser_dynamic__["a" /* platformBrowserDynamic */])().bootstrapModule(__WEBPACK_IMPORTED_MODULE_3__app_app_module__["a" /* AppModule */]);
-//# sourceMappingURL=D:/chromeExtension/chromeExtensionAngularCli/src/main.js.map
+//# sourceMappingURL=D:/chromeExtension/src/main.js.map
 
 /***/ }),
 
@@ -87,7 +87,7 @@ var AppComponent = (function () {
                 var matchResults = historyItem.url.match(pattern);
                 if (matchResults != null && matchResults.length == 1) {
                     // if no matches, the return value is null instead of an array
-                    console.log(historyItem);
+                    // console.log(historyItem);
                     var rootUrl = matchResults[0];
                     if (rootUrl in dictionary) {
                         dictionary[rootUrl] = _this.updateHistories(rootUrl, dictionary[rootUrl], historyItem.visitCount);
@@ -99,6 +99,42 @@ var AppComponent = (function () {
             }
         });
     }
+    AppComponent.prototype.startEditing = function (mouseEvent, bookmark, bookshelfName) {
+        var inputElement = mouseEvent.srcElement;
+        var originalString = bookmark.title.substring(bookshelfName.length + 2);
+        var tag = bookmark.title.substring(0, bookshelfName.length + 2);
+        // define a helper function, so that it can use this element in the scope
+        var finishEditing = function (keyEvent) {
+            console.log(keyEvent);
+            var keyCode = keyEvent.keyCode;
+            if (keyCode == '13') {
+                // rename the bookmark
+                if (inputElement.value != originalString) {
+                    // rename
+                    var newName = tag + inputElement.value;
+                    bookmark.title = newName; // TODO determine what's the performance impact
+                    // using angular update, if high, we can ignore this...just update the size
+                    chrome.bookmarks.update(bookmark.id, { 'title': newName });
+                }
+                // this is just registring, the event will happen a lot later
+                inputElement.setAttribute("readonly", "");
+                inputElement.removeEventListener("blur", ignoreEditing);
+                inputElement.removeEventListener("keypress", finishEditing);
+            }
+        };
+        var ignoreEditing = function (focusEvent) {
+            console.log(focusEvent);
+            inputElement.value = originalString;
+            inputElement.setAttribute("readonly", "");
+            inputElement.removeEventListener("blur", ignoreEditing);
+            inputElement.removeEventListener("keypress", finishEditing);
+        };
+        inputElement.removeAttribute("readonly"); // allow editing
+        inputElement.select();
+        // XXX inputElement select all text area
+        inputElement.addEventListener("blur", ignoreEditing);
+        inputElement.addEventListener("keypress", finishEditing);
+    };
     AppComponent.prototype.imageURL = function (bookmark) {
         return this.sanitizer.bypassSecurityTrustUrl('chrome://favicon/size/16@1x/' + bookmark.url);
     };
@@ -141,18 +177,7 @@ var AppComponent = (function () {
         // return newindex
         return returnV;
     };
-    //TODO merge them into one button
-    AppComponent.prototype.rename = function (bookmark) {
-        var _this = this;
-        var newName = prompt("Bookmark Name:", bookmark.title);
-        if (newName != null) {
-            chrome.bookmarks.update(bookmark.id, { 'title': newName }, function () {
-                chrome.bookmarks.getRecent(20, function (results) {
-                    _this.refresh();
-                });
-            });
-        }
-    };
+    // TODO implement this with an icon
     AppComponent.prototype.delete = function (bookmark) {
         var _this = this;
         chrome.bookmarks.remove(bookmark.id, function () {
@@ -191,7 +216,7 @@ var AppComponent = (function () {
     return AppComponent;
     var _a, _b;
 }());
-//# sourceMappingURL=D:/chromeExtension/chromeExtensionAngularCli/src/app.component.js.map
+//# sourceMappingURL=D:/chromeExtension/src/app.component.js.map
 
 /***/ }),
 
@@ -242,7 +267,7 @@ var AppModule = (function () {
     ], AppModule);
     return AppModule;
 }());
-//# sourceMappingURL=D:/chromeExtension/chromeExtensionAngularCli/src/app.module.js.map
+//# sourceMappingURL=D:/chromeExtension/src/app.module.js.map
 
 /***/ }),
 
@@ -258,21 +283,21 @@ var AppModule = (function () {
 var environment = {
     production: false
 };
-//# sourceMappingURL=D:/chromeExtension/chromeExtensionAngularCli/src/environment.js.map
+//# sourceMappingURL=D:/chromeExtension/src/environment.js.map
 
 /***/ }),
 
 /***/ 614:
 /***/ (function(module, exports) {
 
-module.exports = ".bookmark:hover a{\r\n    display: block;\r\n}\r\n.bookmark .buttons, .bookmark a{\r\n    display:none\r\n}\r\n.bookmark{\r\n    display:-webkit-box;\r\n    display:-ms-flexbox;\r\n    display:flex;\r\n}\r\n.bookmark .title{\r\n    display:block;\r\n}\r\n.bookmark a, .bookmark .title {\r\n    white-space:pre;\r\n    overflow:hidden;\r\n    text-overflow:ellipsis;\r\n}\r\n.bookmark a{\r\n    color: hsl(0, 0%, 70%);\r\n    -ms-flex-negative:4;\r\n        flex-shrink:4;\r\n}\r\n#shortcut ul{\r\n    display:inline-block;\r\n}\r\n"
+module.exports = ".bookmark:hover a{\r\n    display: block;\r\n}\r\n.bookmark a{\r\n    color: hsl(0, 0%, 70%);\r\n    -ms-flex-negative:4;\r\n        flex-shrink:4;\r\n    display:none\r\n}\r\n.bookmark{\r\n    display:-webkit-box;\r\n    display:-ms-flexbox;\r\n    display:flex;\r\n}\r\n.bookmark a, .bookmark .title {\r\n    border: none;\r\n    white-space:pre;\r\n    overflow:hidden;\r\n    text-overflow:ellipsis;\r\n}\r\n"
 
 /***/ }),
 
 /***/ 615:
 /***/ (function(module, exports) {
 
-module.exports = "<tabset id=\"shortcut\">\n    <tab heading=\"[{{bookshelfName}}]\" *ngFor=\"let bookshelfName of bookShelfNames\" >\n    <ul>\n    <li class=\"bookmark\" *ngFor=\"let bookmark of bookshelves[bookshelfName]\">\n            <img [src]=\"imageURL(bookmark)\" width=\"16\" height=\"16\">\r\n            <span class=\"title\">{{bookmark.title.substring(bookshelfName.length+2)}}</span>\n            <a href=\"{{bookmark.url}}\">{{bookmark.url}}</a>\n            <span class=\"buttons\">\n                <button (click)=\"delete(bookmark)\" >Delete</button>\n                <button (click)=\"rename(bookmark)\" >Rename</button>\n            </span>\n    </li>\n    </ul>\n    </tab>\n</tabset>\n\n<ul>\n    <li *ngFor=\"let history of displayHistories\">\n        {{history[0]}} => {{history[1]}}\n    </li>\n</ul>\n"
+module.exports = "<tabset id=\"shortcut\">\n    <tab heading=\"[{{bookshelfName}}]\" *ngFor=\"let bookshelfName of bookShelfNames\" >\n        <li class=\"bookmark\" *ngFor=\"let bookmark of bookshelves[bookshelfName]\">\n            <img [src]=\"imageURL(bookmark)\" width=\"16\" height=\"16\">\r\n            <input  class=\"title\"\r\n                    (dblclick)=\"startEditing($event,bookmark,bookshelfName)\"\r\n                    type=\"text\"\r\n                    value=\"{{bookmark.title.substring(bookshelfName.length+2)}}\"\r\n                    size=\"{{bookmark.title.length-(bookshelfName.length+2)}}\"\r\n                    readonly>\r\n            <a href=\"{{bookmark.url}}\">{{bookmark.url}}</a>\n        </li>\n    </tab>\n</tabset>\n\n<ul>\n    <li *ngFor=\"let history of displayHistories\">\n        {{history[0]}} => {{history[1]}}\n    </li>\n</ul>\n"
 
 /***/ }),
 
