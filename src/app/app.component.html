@@ -3,7 +3,7 @@
         <li class="bookmark" *ngFor="let bookmark of bookshelves[bookshelfName]">
             <img [src]="imageURL(bookmark)" width="16" height="16">
             <input  class="title"
-                    (dblclick)="startEditing($event,bookmark,bookshelfName)"
+                    (dblclick)="startEditing($event,bookmark)"
                     type="text"
                     value="{{bookmark.title.substring(bookshelfName.length+2)}}"
                     size="{{bookmark.title.length-(bookshelfName.length+2)}}"

@@ -18,10 +18,10 @@ export class AppComponent {
     timeOut;
     readonly animationDelay:number = 40; // no animation by default
 
-    startEditing(mouseEvent,bookmark, bookshelfName){
+    startEditing(mouseEvent,bookmark){
         let inputElement = mouseEvent.srcElement;
-        let originalString = bookmark.title.substring(bookshelfName.length+2);
-        let tag = bookmark.title.substring(0,bookshelfName.length+2);
+        let originalString = inputElement.getAttribute('ng-reflect-value');
+        let tag = bookmark.title.substring(0, bookmark.title.length - originalString.length);
 
         // define a helper function, so that it can use this element in the scope
         var finishEditing = function(keyEvent){
@@ -32,6 +32,7 @@ export class AppComponent {
                 if(inputElement.value != originalString){
                     // rename
                     let newName = tag + inputElement.value;
+                    // make sure the default is updated, ng-reflect-value == bookmark.title
                     bookmark.title = newName; // TODO determine what's the performance impact
                                               // using angular update, if high, we can ignore this...just update the size
                     chrome.bookmarks.update(bookmark.id,{'title':newName});
@@ -46,7 +47,7 @@ export class AppComponent {
 
         var ignoreEditing = function(focusEvent){
             console.log(focusEvent);
-            inputElement.value = originalString;
+            inputElement.value = originalString; // restore the display text to default
             inputElement.setAttribute("readonly","");
             inputElement.removeEventListener("blur", ignoreEditing);
             inputElement.removeEventListener("keypress",finishEditing);

@@ -99,10 +99,10 @@ var AppComponent = (function () {
             }
         });
     }
-    AppComponent.prototype.startEditing = function (mouseEvent, bookmark, bookshelfName) {
+    AppComponent.prototype.startEditing = function (mouseEvent, bookmark) {
         var inputElement = mouseEvent.srcElement;
-        var originalString = bookmark.title.substring(bookshelfName.length + 2);
-        var tag = bookmark.title.substring(0, bookshelfName.length + 2);
+        var originalString = inputElement.getAttribute('ng-reflect-value');
+        var tag = bookmark.title.substring(0, bookmark.title.length - originalString.length);
         // define a helper function, so that it can use this element in the scope
         var finishEditing = function (keyEvent) {
             console.log(keyEvent);
@@ -112,6 +112,7 @@ var AppComponent = (function () {
                 if (inputElement.value != originalString) {
                     // rename
                     var newName = tag + inputElement.value;
+                    // make sure the default is updated, ng-reflect-value == bookmark.title
                     bookmark.title = newName; // TODO determine what's the performance impact
                     // using angular update, if high, we can ignore this...just update the size
                     chrome.bookmarks.update(bookmark.id, { 'title': newName });
@@ -124,7 +125,7 @@ var AppComponent = (function () {
         };
         var ignoreEditing = function (focusEvent) {
             console.log(focusEvent);
-            inputElement.value = originalString;
+            inputElement.value = originalString; // restore the display text to default
             inputElement.setAttribute("readonly", "");
             inputElement.removeEventListener("blur", ignoreEditing);
             inputElement.removeEventListener("keypress", finishEditing);
@@ -297,7 +298,7 @@ module.exports = ".bookmark:hover a{\r\n    display: block;\r\n}\r\n.bookmark a{
 /***/ 615:
 /***/ (function(module, exports) {
 
-module.exports = "<tabset id=\"shortcut\">\n    <tab heading=\"[{{bookshelfName}}]\" *ngFor=\"let bookshelfName of bookShelfNames\" >\n        <li class=\"bookmark\" *ngFor=\"let bookmark of bookshelves[bookshelfName]\">\n            <img [src]=\"imageURL(bookmark)\" width=\"16\" height=\"16\">\r\n            <input  class=\"title\"\r\n                    (dblclick)=\"startEditing($event,bookmark,bookshelfName)\"\r\n                    type=\"text\"\r\n                    value=\"{{bookmark.title.substring(bookshelfName.length+2)}}\"\r\n                    size=\"{{bookmark.title.length-(bookshelfName.length+2)}}\"\r\n                    readonly>\r\n            <a href=\"{{bookmark.url}}\">{{bookmark.url}}</a>\n        </li>\n    </tab>\n</tabset>\n\n<ul>\n    <li *ngFor=\"let history of displayHistories\">\n        {{history[0]}} => {{history[1]}}\n    </li>\n</ul>\n"
+module.exports = "<tabset id=\"shortcut\">\n    <tab heading=\"[{{bookshelfName}}]\" *ngFor=\"let bookshelfName of bookShelfNames\" >\n        <li class=\"bookmark\" *ngFor=\"let bookmark of bookshelves[bookshelfName]\">\n            <img [src]=\"imageURL(bookmark)\" width=\"16\" height=\"16\">\r\n            <input  class=\"title\"\r\n                    (dblclick)=\"startEditing($event,bookmark)\"\r\n                    type=\"text\"\r\n                    value=\"{{bookmark.title.substring(bookshelfName.length+2)}}\"\r\n                    size=\"{{bookmark.title.length-(bookshelfName.length+2)}}\"\r\n                    readonly>\r\n            <a href=\"{{bookmark.url}}\">{{bookmark.url}}</a>\n        </li>\n    </tab>\n</tabset>\n\n<ul>\n    <li *ngFor=\"let history of displayHistories\">\n        {{history[0]}} => {{history[1]}}\n    </li>\n</ul>\n"
 
 /***/ }),
 
