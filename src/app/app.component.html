@@ -13,8 +13,9 @@
     </tab>
 </tabset>
 
-<ul>
-    <li *ngFor="let history of displayHistories">
-        {{history[0]}} => {{history[1]}}
+<ul class = "list-group">
+    <li *ngFor="let history of displayHistories" class="list-group-item justify-content-start">
+        {{history[0]}}
+        <span class="badge badge-default badge-pill">{{history[1]}}</span>
     </li>
 </ul>

@@ -17,6 +17,7 @@ TODO list:
 * ~~display fav icon~~
 * make the list draggable
 * weekly use static history, daily use animation
+* use content script to detect whether a website contains list of hyperlinks, then, allow user to add checkmarks to it or (isread), track your process (ie how to think like a computer scientist)/ merge the paragraph into a hyper link allow you to expand
 
 DEBUG list:
 * Sometimes, the most common websites won't even show up
