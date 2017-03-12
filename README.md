@@ -9,7 +9,6 @@ TODO list:
 * Daily quotes (external APIs)
 * Dict.youdao.com get your most recently vocabulary list (from the url)
 * Google.com get your keywords (from the url)
-* May not apply here, but when you have multiple tabs open, organize them as groups with the same root url?
 * ~~double click to rename the bookmark~~, red X mark to delete
 * ~~Add tiles that filter by tag ie [antares] or filter by folder~~
 * for work, you can trigger cmd and providing arguments
@@ -18,6 +17,8 @@ TODO list:
 * make the list draggable
 * weekly use static history, daily use animation
 * use content script to detect whether a website contains list of hyperlinks, then, allow user to add checkmarks to it or (isread), track your process (ie how to think like a computer scientist)/ merge the paragraph into a hyper link allow you to expand
+* monitor youtube searches, the ones that you search multiple times can get banded
+* multiple tabs, move the one you are watching to the left
 
 DEBUG list:
 * Sometimes, the most common websites won't even show up
