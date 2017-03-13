@@ -18,7 +18,8 @@ TODO list:
 * weekly use static history, daily use animation
 * use content script to detect whether a website contains list of hyperlinks, then, allow user to add checkmarks to it or (isread), track your process (ie how to think like a computer scientist)/ merge the paragraph into a hyper link allow you to expand
 * monitor youtube searches, the ones that you search multiple times can get banded
-* multiple tabs, move the one you are watching to the left
+* ~~multiple tabs, move the one you are watching to the left~~
+* organize tabs of the same host 
 
 DEBUG list:
 * Sometimes, the most common websites won't even show up

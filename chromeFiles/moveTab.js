@@ -1,15 +1,3 @@
-function callBackA(activeInfo){
-    // TODO newly created, we skip
-    tabId = activeInfo.tabId;
-    windowId = activeInfo.windowId;
-    moveProperties = {index:-1};
-    // alert(chrome.tabs);
-    // chrome.tabs.getCurrent(function(tab){alert(tab)});
-    // prove that we have access to chrome.tabs
-    chrome.tabs.move(tabId,moveProperties);
-    //alert("activetab changed, tabId: " + tabId + " windowId: " + windowId );
-}
-
 function arrayToString(arr){
     var str = "";
     for(var i = 0; i < arr.length; i++){
@@ -17,12 +5,22 @@ function arrayToString(arr){
     }
     return str;
 }
-function callBackB(highlightInfo){
-    tabIds = highlightInfo.tabIds;
-    windowId = highlightInfo.windowId;
 
-    alert("highlighttab changed, tabId: " + arrayToString(tabIds) + " windowId: " + windowId );
+function objectToString(obj){
+    var str = "";
+    for (var propName in obj){
+        str = str + " " + propName + ":" + obj[propName];
+    }
+    return str;
+}
+
+function callBackA(activeInfo){
+    var tabId = activeInfo.tabId;
+    setTimeout(function(){chrome.tabs.move(tabId,{index:-1},function(tab){console.log(tab)});},60);
+    // band aid fix, if no timeout, and the mouse it over the tab
+    // here's the error message:
+    // tabs.move: Tabs cannot be edited right now (user may be dragging a tab).
 }
 
 chrome.tabs.onActivated.addListener(callBackA)
-// chrome.tabs.onHighlighted.addListener(callBackB) // select mutliple tabs at once
+// FIXME when a tab is closed, the next tab is activated, thus move to the front, not what I wanted
