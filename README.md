@@ -17,9 +17,10 @@ TODO list:
 * make the list draggable
 * weekly use static history, daily use animation
 * use content script to detect whether a website contains list of hyperlinks, then, allow user to add checkmarks to it or (isread), track your process (ie how to think like a computer scientist)/ merge the paragraph into a hyper link allow you to expand
-* monitor youtube searches, the ones that you search multiple times can get banded
-* ~~multiple tabs, move the one you are watching to the left~~
-* organize tabs of the same host 
+* monitor youtube searches, the ones that you search multiple times can get
+* organize tabs of the same host  partially done, still some TODOs and FIXME
+* refactor chrome code into an Angular service
+* the extension button shows about (availability offline)
 
 DEBUG list:
 * Sometimes, the most common websites won't even show up

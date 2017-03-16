@@ -7,6 +7,7 @@
     "permissions":[
         "bookmarks",
         "history",
+        "tabs",
         "chrome://favicon/size/16@1x/*"
     ],
     "chrome_url_overrides":{
