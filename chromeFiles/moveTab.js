@@ -18,10 +18,10 @@ function reorder(tabs){
 function logAfterMove(tabs){
     if (Array.isArray(tabs)) {
         tabs.forEach(function(item,index,array){
-            console.log("-->move tab: " + item.id + ", url: " + item.url);
+            console.log("-->move tab: " + item.id + ", url: " + item.url + ", index: " + item.index);
         })
     } else{
-        console.log("move tab: " + tabs.id + ", url: " + tabs.url);
+        console.log("move tab: " + tabs.id + ", url: " + tabs.url + ", index: " + tabs.index);
     }
 }
 
@@ -51,7 +51,19 @@ function organize(tab){
             // activeTab is not the only one from this host
             chrome.tabs.move(tabIds,{'index':-1}, logAfterMove);
         }
-        chrome.tabs.move(activeTab,{'index':-1}, logAfterMove);
+        chrome.tabs.move(activeTab,{'index':-1}, function(tab){
+            // highlight the last indices
+            logAfterMove(tab);
+            var end = tab.index;
+            var start = tab.index - tabIds.length -1;
+            var toHighlight = []
+            for(;start < end; end --){
+                toHighlight.push(end);
+            }
+            //XXX the first is of toHighlight is going to stay on focus
+            chrome.tabs.highlight({tabs: toHighlight});
+            //console.log("highlight: " + toHighlight)
+        });
     }); // move to end will execute depends on when query finishes
     // chrome.tabs.move(tab.id,{'index':-1}, logAfterMove); // added to the callback stack late, but might get executed first because of query time
 }
