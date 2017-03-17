@@ -25,17 +25,37 @@ function logAfterMove(tabs){
     }
 }
 
+function compareHost(Url, host){
+    if(host.length > Url.length){
+        return false;
+    }
+    for (var i = 0; i < host.length; i++){
+        if (host[i] != Url[i]){
+            return false;
+        }
+    }
+    return true;
+}
+
 function organize(tab){
     var queryObject = {'currentWindow':true}; // by default organize the entire window
-    if (tab !== null){
+    if (tab){
         var hostUrl = tab.url.match(/https?:\/\/[^/]*/); // took from the newtab extension
-        if (hostUrl ===null || hostUrl.length != 1){
+        if ( !hostUrl || hostUrl.length != 1){
             // for example "chrome://extensions/"
             console.log("failed to find host URL: " + tab.url);
             return // do nothing
         }
-        hostUrl = hostUrl[0] + "/*"; // https://developer.chrome.com/extensions/match_patterns
-        queryObject.url = hostUrl;
+        hostUrl = hostUrl[0];
+
+        var oldUrl = window.sessionStorage[tab.id];
+        window.sessionStorage[tab.id] = tab.url; // update
+        if (oldUrl && compareHost(oldUrl,hostUrl)){
+            // same host, do nothing
+            console.log("same host, abort");
+            return;
+        }
+        queryObject.url = hostUrl + "/*"; // https://developer.chrome.com/extensions/match_patterns
         queryObject.active = false; // currenttab, which is focused, does not move
     }
 
@@ -74,11 +94,12 @@ function update(tabId, changeInfo, tab){
     // changeInfo: Obj
     // tab: Tab
     var url = changeInfo.url;
-    if (url !== undefined){
-        console.log(url)
+    if (url){ // URL is not undefined
+        console.log(url);
         organize(tab);
     }
     // TODO, FIXME get the old url, only perform reorder if host has changed
+    // TODO open in new tab, also will trigger focus
     // the idea is that if you are reading a page, nothing happens, but if you are changing host
     // we prompt it to the last, so hopefully it will prevent you from open a lot of tabs of common host
 }
