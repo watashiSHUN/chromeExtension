@@ -18,7 +18,7 @@ TODO list:
 * weekly use static history, daily use animation
 * use content script to detect whether a website contains list of hyperlinks, then, allow user to add checkmarks to it or (isread), track your process (ie how to think like a computer scientist)/ merge the paragraph into a hyper link allow you to expand
 * monitor youtube searches, the ones that you search multiple times can get
-* organize tabs of the same host  partially done, still some TODOs and FIXME
+* ~~when a tab is focused, and it's URL is changed (to a different host), organize it with other tabs of the same host~~ (ie, multiple google search pages open...what's the point)
 * refactor chrome code into an Angular service
 * the extension button shows about (availability offline)
 

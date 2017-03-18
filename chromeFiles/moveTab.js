@@ -16,13 +16,11 @@ function reorder(tabs){
 }
 
 function logAfterMove(tabs){
-    if (Array.isArray(tabs)) {
-        tabs.forEach(function(item,index,array){
-            console.log("-->move tab: " + item.id + ", url: " + item.url + ", index: " + item.index);
-        })
-    } else{
-        console.log("move tab: " + tabs.id + ", url: " + tabs.url + ", index: " + tabs.index);
-    }
+    console.group();
+    tabs.forEach(function(item,index,array){
+        console.log("move tab: " + item.id + ", url: " + item.url + ", index: " + item.index);
+    })
+    console.groupEnd();
 }
 
 function compareHost(Url, host){
@@ -38,7 +36,7 @@ function compareHost(Url, host){
 }
 
 function organize(tab){
-    var queryObject = {'currentWindow':true}; // by default organize the entire window
+    var queryObject = {'currentWindow':true};
     if (tab){
         var hostUrl = tab.url.match(/https?:\/\/[^/]*/); // took from the newtab extension
         if ( !hostUrl || hostUrl.length != 1){
@@ -55,6 +53,13 @@ function organize(tab){
             console.log("same host, abort");
             return;
         }
+        if (!tab.active){
+            // open in new tab, but I want to continue with my current session
+            // still record its url changes for host detection
+            console.log("no same host, noop");
+            return;
+        }
+        // set up query parameter
         queryObject.url = hostUrl + "/*"; // https://developer.chrome.com/extensions/match_patterns
         queryObject.active = false; // currenttab, which is focused, does not move
     }
@@ -67,22 +72,26 @@ function organize(tab){
         tabs.forEach(function(item, index, array){
             tabIds.push(item.id);
         })
-        if(tabIds.length != 0){
-            // activeTab is not the only one from this host
-            chrome.tabs.move(tabIds,{'index':-1}, logAfterMove);
+        tabIds.push(activeTab); // last to be moved
+
+        if(tabIds.length == 1){
+            console.log("no same host tab found, noop");
+            return;
         }
-        chrome.tabs.move(activeTab,{'index':-1}, function(tab){
-            // highlight the last indices
-            logAfterMove(tab);
-            var end = tab.index;
-            var start = tab.index - tabIds.length -1;
-            var toHighlight = []
+
+        chrome.tabs.move(tabIds,{'index':-1}, function(tabs){
+            logAfterMove(tabs);
+            // highlight them
+            var end = tabs[0].index; // they all moved to the end
+            // tab is an object represent the state of the tab at the time
+            var start = end - tabIds.length;
+            var toHighlight = [];
             for(;start < end; end --){
                 toHighlight.push(end);
             }
             //XXX the first is of toHighlight is going to stay on focus
+            console.log("highlight: " + toHighlight)
             chrome.tabs.highlight({tabs: toHighlight});
-            //console.log("highlight: " + toHighlight)
         });
     }); // move to end will execute depends on when query finishes
     // chrome.tabs.move(tab.id,{'index':-1}, logAfterMove); // added to the callback stack late, but might get executed first because of query time
@@ -94,14 +103,12 @@ function update(tabId, changeInfo, tab){
     // changeInfo: Obj
     // tab: Tab
     var url = changeInfo.url;
+    // console.log(changeInfo);
+    // console.log(tab);
     if (url){ // URL is not undefined
-        console.log(url);
+        // console.log(url);
         organize(tab);
     }
-    // TODO, FIXME get the old url, only perform reorder if host has changed
-    // TODO open in new tab, also will trigger focus
-    // the idea is that if you are reading a page, nothing happens, but if you are changing host
-    // we prompt it to the last, so hopefully it will prevent you from open a lot of tabs of common host
 }
 
 chrome.tabs.onUpdated.addListener(update) // change url
