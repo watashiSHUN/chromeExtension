@@ -1,20 +1,3 @@
-function reorder(tabs){
-    // sort based on url
-    tabs.sort(function(a,b){
-        if(a.url < b.url){
-            return -1;
-        }
-        if(a.url > b.url){
-            return 1;
-        }
-        return 0;
-    })
-    // forEach instead of foreach
-    tabs.forEach(function(item,index,array){
-        chrome.tabs.move(item.id,{'index':index})
-    })
-}
-
 function logAfterMove(tabs){
     console.group();
     tabs.forEach(function(item,index,array){
@@ -35,28 +18,30 @@ function compareHost(Url, host){
     return true;
 }
 
-function organize(tab){
+function organize(currentTab){
     var queryObject = {'currentWindow':true};
-    if (tab){
-        var hostUrl = tab.url.match(/https?:\/\/[^/]*/); // took from the newtab extension
+    if (currentTab){
+        // filter
+        var hostUrl = currentTab.url.match(/https?:\/\/[^/]*/); // took from the newtab extension
+        // javascript, function accessibility
         if ( !hostUrl || hostUrl.length != 1){
             // for example "chrome://extensions/"
-            console.log("failed to find host URL: " + tab.url);
+            console.log("failed to find host URL: " + currentTab.url);
             return // do nothing
         }
         hostUrl = hostUrl[0];
 
-        var oldUrl = window.sessionStorage[tab.id];
-        window.sessionStorage[tab.id] = tab.url; // update
+        var oldUrl = window.sessionStorage[currentTab.id];
+        window.sessionStorage[currentTab.id] = currentTab.url; // update
         if (oldUrl && compareHost(oldUrl,hostUrl)){
             // same host, do nothing
             console.log("same host, abort");
             return;
         }
-        if (!tab.active){
+        if (!currentTab.active){
             // open in new tab, but I want to continue with my current session
             // still record its url changes for host detection
-            console.log("no same host, noop");
+            console.log("open in new tab, noop");
             return;
         }
         // set up query parameter
@@ -64,22 +49,22 @@ function organize(tab){
         queryObject.active = false; // currenttab, which is focused, does not move
     }
 
-    var activeTab = tab.id; // closure
-
     chrome.tabs.query(queryObject, function (tabs){
         // move tabs from the same host
         var tabIds = [];
         tabs.forEach(function(item, index, array){
             tabIds.push(item.id);
         })
-        tabIds.push(activeTab); // last to be moved
+        tabIds.push(currentTab.id); // last to be moved
 
-        if(tabIds.length == 1){
-            console.log("no same host tab found, noop");
-            return;
-        }
+        // if(tabIds.length == 1){
+        // } XXX still decide to move, if its the last one, hard to track
 
-        chrome.tabs.move(tabIds,{'index':-1}, function(tabs){
+        function highlightCallBack(tabs){
+            // could be a single tab
+            if (!Array.isArray(tabs)){
+                tabs = [tabs];
+            }
             logAfterMove(tabs);
             // highlight them
             var end = tabs[0].index; // they all moved to the end
@@ -92,7 +77,15 @@ function organize(tab){
             //XXX the first is of toHighlight is going to stay on focus
             console.log("highlight: " + toHighlight)
             chrome.tabs.highlight({tabs: toHighlight});
-        });
+        }
+
+        if(sessionStorage[currentTab.windowId+"last"] === hostUrl){
+            chrome.tabs.move(currentTab.id,{'index':-1},highlightCallBack)
+        }else{
+            sessionStorage[currentTab.windowId+"last"] = hostUrl;
+            chrome.tabs.move(tabIds,{'index':-1},highlightCallBack)
+        }
+
     }); // move to end will execute depends on when query finishes
     // chrome.tabs.move(tab.id,{'index':-1}, logAfterMove); // added to the callback stack late, but might get executed first because of query time
 }
