@@ -22,11 +22,12 @@ function organize(currentTab){
     var queryObject = {'currentWindow':true};
     if (currentTab){
         // filter
-        var hostUrl = currentTab.url.match(/https?:\/\/[^/]*/); // took from the newtab extension
+        // protocal://url/
+        var hostUrl = currentTab.url.match(/^\w+:\/\/[^/]*/);
         // javascript, function accessibility
         if ( !hostUrl || hostUrl.length != 1){
-            // for example "chrome://extensions/"
-            console.log("failed to find host URL: " + currentTab.url);
+            console.log("invalid host" + currentTab.url);
+            // should never happen? TODO remove this test
             return // do nothing
         }
         hostUrl = hostUrl[0];
