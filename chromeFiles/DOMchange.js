@@ -1,3 +1,6 @@
+// FIXME these two functions...performs so many checks because
+// I don't understand the callback arguments of MutationObserver
+// TODO
 function hideRecommandations() {
     try{
         document.getElementById('feed').remove();
@@ -10,6 +13,7 @@ function hideRecommandations() {
     try{
         document.getElementById('watch7-sidebar-contents').remove();
         console.log("hide <sidebar> successful");
+        hideEndVideo(); // when we open youtube video directly from a link
         return true;
     }catch(e){
         console.log("hide <sidebar> unsuccessful");
@@ -18,21 +22,24 @@ function hideRecommandations() {
 }
 
 function hideEndVideo(){
+    // TODO onDOMContentLoaded does not yet have end-screen element
     try{
+        console.log(document.getElementById('movie_player').getElementsByClassName('html5-endscreen ytp-player-content videowall-endscreen')[0]);
         var videoPlayer = document.getElementById('movie_player');
         var config = {attributes:true,childList: true};
         var observer = new MutationObserver(function(array,instance){
-            console.log(array);
+            console.log('movie player is modified');
+            logHelper(array,instance);
             try{
                 var target = videoPlayer.getElementsByClassName('html5-endscreen ytp-player-content videowall-endscreen')[0];
-                console.log(target);
                 var config = {attributes:true};
-                var ob = new MutationObserver(function(){
-                    console.log('endscreen attribute changed');
+                var ob = new MutationObserver(function(a,b){
+                    console.log('endscreen is modified changed');
+                    logHelper(a,b);
                     target.style.display="none";
                 })
                 ob.observe(target,config);
-                // instance.disconnect();
+                instance.disconnect(); // keep watching until we get a endscreen
             }catch(e){
                 console.log('does not have endscreen')
                 console.log(e);
@@ -41,17 +48,21 @@ function hideEndVideo(){
         observer.observe(videoPlayer,config);
     }catch(e){
         console.log('does not have videoplayer');
-        console.error(e);
+        console.log(e); // adblocker create too many load exceptions, so we use log to filter our exceptions
     }
 
 }
 
-function pageElementMonitor(mutationrecods,instance){
-    console.log('page element is modified');
+function logHelper(mutationsRecords, instance){
     console.group();
-    console.log(mutationrecods);
+    console.log(mutationsRecords);
     console.log(instance);
     console.groupEnd();
+}
+
+function pageElementMonitor(a,b){
+    console.log('page element is modified');
+    logHelper(a,b);
     hideRecommandations();
 }
 
@@ -61,13 +72,6 @@ function changeOnDomLoad(){
     document.addEventListener("DOMContentLoaded", function(){
         console.log('on DOMContentLoaded');
         hideRecommandations();
-        if(document.getElementById('movie_player')){
-            console.log('has movie player'); // return true
-        }
-        if(document.getElementById('movie_player').getElementsByClassName('html5-endscreen ytp-player-content videowall-endscreen')[0]){
-            console.log('has endscreen'); // return false
-        }
-        hideEndVideo(); // when we open youtube video directly from a link
         document.getElementsByTagName('html')[0].style.display="block";
         // navigation + click on videos
         var target = document.getElementById('page');
