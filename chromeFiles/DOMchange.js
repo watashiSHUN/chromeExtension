@@ -1,12 +1,11 @@
-// FIXME these two functions...performs so many checks because
-// I don't understand the callback arguments of MutationObserver
-// TODO
+var debug = false; //TODO when debug, change it to true
+function NOOP(){};
+console.log = debug?console.log:NOOP;
+console.group = debug? console.group:NOOP;
+console.groupEnd = debug? console.groupEnd:NOOP;
+
 function hideRecommandations() {
     try{
-        // >page
-        //   >player
-        //   >content
-        //     >feed
         document.getElementById('feed').remove(); //XXX because contentscript does not have mutationsRecords
                                                   // need to search yourself
         console.log("hide <feed> successful");
@@ -18,7 +17,7 @@ function hideRecommandations() {
     try{
         document.getElementById('watch7-sidebar').remove();
         console.log("hide <sidebar> successful");
-        hideEndVideo(); // when we open youtube video directly from a link
+        hideEndVideo(); //TODO two cases, if can't find endscreen, use observer. Else just remove()
         return true;
     }catch(e){
         console.log("hide <sidebar> unsuccessful");
@@ -27,7 +26,6 @@ function hideRecommandations() {
 }
 
 function hideEndVideo(){
-    // TODO onDOMContentLoaded does not yet have end-screen element
     try{
         // console.log(document.getElementById('movie_player').getElementsByClassName('html5-endscreen ytp-player-content videowall-endscreen')[0]);
         var videoPlayer = document.getElementById('movie_player');
@@ -72,7 +70,6 @@ function pageContentElementMonitor(a,b){
     hideRecommandations();
 }
 
-// TODO sometimes it is triggered twice since page class attribute is changed...twice
 function changeOnDomLoad(){
     document.getElementsByTagName('html')[0].style.display="none";
     document.addEventListener("DOMContentLoaded", function(){
