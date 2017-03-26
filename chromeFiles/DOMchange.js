@@ -3,7 +3,12 @@
 // TODO
 function hideRecommandations() {
     try{
-        document.getElementById('feed').remove();
+        // >page
+        //   >player
+        //   >content
+        //     >feed
+        document.getElementById('feed').remove(); //XXX because contentscript does not have mutationsRecords
+                                                  // need to search yourself
         console.log("hide <feed> successful");
         return true;
     }catch(e){
@@ -11,7 +16,7 @@ function hideRecommandations() {
         console.log("hide <feed> unsuccessful");
     }
     try{
-        document.getElementById('watch7-sidebar-contents').remove();
+        document.getElementById('watch7-sidebar').remove();
         console.log("hide <sidebar> successful");
         hideEndVideo(); // when we open youtube video directly from a link
         return true;
@@ -24,21 +29,22 @@ function hideRecommandations() {
 function hideEndVideo(){
     // TODO onDOMContentLoaded does not yet have end-screen element
     try{
-        console.log(document.getElementById('movie_player').getElementsByClassName('html5-endscreen ytp-player-content videowall-endscreen')[0]);
+        // console.log(document.getElementById('movie_player').getElementsByClassName('html5-endscreen ytp-player-content videowall-endscreen')[0]);
         var videoPlayer = document.getElementById('movie_player');
-        var config = {attributes:true,childList: true};
+        var config = {attributes:true}; // class = pause-mode, playing-mode, end-mode
         var observer = new MutationObserver(function(array,instance){
             console.log('movie player is modified');
             logHelper(array,instance);
             try{
                 var target = videoPlayer.getElementsByClassName('html5-endscreen ytp-player-content videowall-endscreen')[0];
-                var config = {attributes:true};
-                var ob = new MutationObserver(function(a,b){
-                    console.log('endscreen is modified changed');
-                    logHelper(a,b);
-                    target.style.display="none";
-                })
-                ob.observe(target,config);
+                target.remove();
+                // var config = {attributes:true};
+                // var ob = new MutationObserver(function(a,b){
+                //     console.log('endscreen is modified');
+                //     logHelper(a,b);
+                //     target.style.display="none"; //TODO remove instead of using mutationobserver
+                // })
+                // ob.observe(target,config);
                 instance.disconnect(); // keep watching until we get a endscreen
             }catch(e){
                 console.log('does not have endscreen')
@@ -60,8 +66,8 @@ function logHelper(mutationsRecords, instance){
     console.groupEnd();
 }
 
-function pageElementMonitor(a,b){
-    console.log('page element is modified');
+function pageContentElementMonitor(a,b){
+    console.log('content element is modified');
     logHelper(a,b);
     hideRecommandations();
 }
@@ -74,11 +80,11 @@ function changeOnDomLoad(){
         hideRecommandations();
         document.getElementsByTagName('html')[0].style.display="block";
         // navigation + click on videos
-        var target = document.getElementById('page');
+        var target = document.getElementById('content'); //<#feed> or <#watch7-sidebar> are both in <#page> -> <#content>
         // create an observer instance
-        var observer = new MutationObserver(pageElementMonitor);
+        var observer = new MutationObserver(pageContentElementMonitor);
         // configuration of the observer:
-        var config = { attributes: true, childList: true, characterData: true }; //TODO only one of them need to be true
+        var config = { attributes:true, childList: true }; // <#placeholder-player> is added/removed...doesn't work, if you navigate from 1 video to another
         // pass in the target node, as well as the observer options
         observer.observe(target, config);
     });
