@@ -1,4 +1,4 @@
-var debug = false; //TODO when debug, change it to true
+var debug = false; // when debug, change it to true
 function NOOP(){};
 console.log = debug?console.log:NOOP;
 console.group = debug? console.group:NOOP;
@@ -17,7 +17,7 @@ function hideRecommandations() {
     try{
         document.getElementById('watch7-sidebar').remove();
         console.log("hide <sidebar> successful");
-        hideEndVideo(); //TODO two cases, if can't find endscreen, use observer. Else just remove()
+        hideEndScreen(); // when it has a side-bar, it also has a videoplayer, we also need to hide the end-screen
         return true;
     }catch(e){
         console.log("hide <sidebar> unsuccessful");
@@ -25,22 +25,19 @@ function hideRecommandations() {
     return false;
 }
 
-function hideEndVideo(){
+function hideEndScreen(){
     try{
-        // console.log(document.getElementById('movie_player').getElementsByClassName('html5-endscreen ytp-player-content videowall-endscreen')[0]);
         var videoPlayer = document.getElementById('movie_player');
         var config = {attributes:true}; // class = pause-mode, playing-mode, end-mode
         var observer = new MutationObserver(function(array,instance){
-            console.log('movie player is modified');
-            logHelper(array,instance);
+            logHelper(array,instance,'movie player is modified');
             try{
                 var target = videoPlayer.getElementsByClassName('html5-endscreen ytp-player-content videowall-endscreen')[0];
                 target.remove();
                 // var config = {attributes:true};
                 // var ob = new MutationObserver(function(a,b){
-                //     console.log('endscreen is modified');
-                //     logHelper(a,b);
-                //     target.style.display="none"; //TODO remove instead of using mutationobserver
+                //     logHelper(a,b,'endscreen is modified');
+                //     target.style.display="none"; //XXX remove() instead of using mutationobserver
                 // })
                 // ob.observe(target,config);
                 instance.disconnect(); // keep watching until we get a endscreen
@@ -57,16 +54,16 @@ function hideEndVideo(){
 
 }
 
-function logHelper(mutationsRecords, instance){
+function logHelper(mutationsRecords, instance, logStr){
     console.group();
+    console.log(logStr);
     console.log(mutationsRecords);
     console.log(instance);
     console.groupEnd();
 }
 
 function pageContentElementMonitor(a,b){
-    console.log('content element is modified');
-    logHelper(a,b);
+    logHelper(a,b,'content element is modified');
     hideRecommandations();
 }
 
