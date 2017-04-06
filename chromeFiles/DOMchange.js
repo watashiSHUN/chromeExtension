@@ -1,9 +1,3 @@
-var debug = false; // when debug, change it to true
-function NOOP(){};
-console.log = debug?console.log:NOOP;
-console.group = debug? console.group:NOOP;
-console.groupEnd = debug? console.groupEnd:NOOP;
-
 function hideRecommandations() {
     try{
         document.getElementById('feed').remove(); //XXX because contentscript does not have mutationsRecords

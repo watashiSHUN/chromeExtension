@@ -41,6 +41,7 @@ __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_0__angular_platform_browser_dyna
 "use strict";
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__angular_core__ = __webpack_require__(0);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__angular_platform_browser__ = __webpack_require__(136);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__chromeFiles_logging__ = __webpack_require__(631);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return AppComponent; });
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
@@ -51,6 +52,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
+
 
 
 var AppComponent = (function () {
@@ -105,7 +107,7 @@ var AppComponent = (function () {
         var tag = bookmark.title.substring(0, bookmark.title.length - originalString.length);
         // define a helper function, so that it can use this element in the scope
         var finishEditing = function (keyEvent) {
-            console.log(keyEvent);
+            __WEBPACK_IMPORTED_MODULE_2__chromeFiles_logging__["a" /* console */].log(keyEvent);
             var keyCode = keyEvent.keyCode;
             if (keyCode == '13') {
                 // rename the bookmark
@@ -124,7 +126,7 @@ var AppComponent = (function () {
             }
         };
         var ignoreEditing = function (focusEvent) {
-            console.log(focusEvent);
+            __WEBPACK_IMPORTED_MODULE_2__chromeFiles_logging__["a" /* console */].log(focusEvent);
             inputElement.value = originalString; // restore the display text to default
             inputElement.setAttribute("readonly", "");
             inputElement.removeEventListener("blur", ignoreEditing);
@@ -193,7 +195,7 @@ var AppComponent = (function () {
         // ts => js issue
         var semaphore = 0;
         var _loop_2 = function(i) {
-            console.log("search for " + "[" + this_2.filters[i] + "]");
+            __WEBPACK_IMPORTED_MODULE_2__chromeFiles_logging__["a" /* console */].log("search for " + "[" + this_2.filters[i] + "]");
             chrome.bookmarks.search("[" + this_2.filters[i] + "]", function (results) {
                 _this.bookshelves[_this.filters[i]] = results;
                 if (++semaphore == _this.filters.length) {
@@ -306,6 +308,22 @@ module.exports = "<tabset id=\"shortcut\">\n    <tab heading=\"[{{bookshelfName}
 /***/ (function(module, exports, __webpack_require__) {
 
 module.exports = __webpack_require__(348);
+
+
+/***/ }),
+
+/***/ 631:
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return console; });
+var debug = true; // when debug, change it to true
+function NOOP(){};
+console.log = debug?console.log:NOOP;
+console.group = debug? console.group:NOOP;
+console.groupEnd = debug? console.groupEnd:NOOP;
+
+ // TODO this is not understood by normal js
 
 
 /***/ })

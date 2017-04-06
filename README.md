@@ -21,6 +21,8 @@ TODO list:
 * ~~when a tab is focused, and it's URL is changed (to a different host), organize it with other tabs of the same host~~ (ie, multiple google search pages open...what's the point)
 * refactor chrome code into an Angular service
 * the extension button shows about (availability offline)
+* double click on chrome tabs to sort them
+* youtube block, make it enter the theatre mode
 
 DEBUG list:
 * Sometimes, the most common websites won't even show up

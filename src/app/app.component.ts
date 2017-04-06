@@ -1,5 +1,6 @@
-import { Component, NgZone } from '@angular/core';
+ import { Component, NgZone } from '@angular/core';
 import { DomSanitizer } from '@angular/platform-browser';
+import {console} from '../../chromeFiles/logging';
 
 @Component({
   selector: 'app-root',
