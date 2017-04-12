@@ -23,6 +23,7 @@ TODO list:
 * the extension button shows about (availability offline)
 * double click on chrome tabs to sort them
 * youtube block, make it enter the theatre mode
+* make the block list dynamic, generated using ML?
 
 DEBUG list:
 * Sometimes, the most common websites won't even show up

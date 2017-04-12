@@ -5,6 +5,12 @@
     "version": "1.0.0",
     "author": "shun",
     "permissions":[
+        "webRequest",
+        "webRequestBlocking",
+
+        "*://dotamax.com/*",
+        "*://www.douyu.com/*",
+
         "bookmarks",
         "history",
         "tabs",
@@ -26,7 +32,8 @@
     "background":{
         "scripts":[
             "logging.js",
-            "moveTab.js"
+            "moveTab.js",
+            "block.js"
         ]
     },
     "content_security_policy": "script-src 'self' 'unsafe-eval'; object-src 'self'"
