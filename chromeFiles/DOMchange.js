@@ -1,22 +1,54 @@
-function hideRecommandations() {
+var blockPublisher = {
+"WehSing":true
+};
+
+function hideContent() {
+    // youtube main page
     try{
-        document.getElementById('feed').remove(); //XXX because contentscript does not have mutationsRecords
-                                                  // need to search yourself
-        console.log("hide <feed> successful");
+        hideRecommandations();
         return true;
     }catch(e){
         // if it doesn't have it, we don't need to hide
-        console.log("hide <feed> unsuccessful");
+        console.log("hide main page unsuccessful");
     }
+
+    // youtube video playing page
     try{
-        document.getElementById('watch7-sidebar').remove();
-        console.log("hide <sidebar> successful");
-        hideEndScreen(); // when it has a side-bar, it also has a videoplayer, we also need to hide the end-screen
+        var user = getPublisher();
+        // if black list -> hide page
+        if(blockPublisher[user]){
+            hidePage();
+        // else -> hide sidebar and endscreen
+        }else{
+            hideSideBarRecommandations();
+            hideEndScreen();
+        }
         return true;
     }catch(e){
-        console.log("hide <sidebar> unsuccessful");
+        // ie, search page/a user's main page, both fail through
+        console.log("hide video playing page unsuccessful");
     }
+
     return false;
+}
+
+function hideRecommandations(){
+    document.getElementById('feed').remove();
+    console.log("hide <feed> successful");
+}
+
+function hideSideBarRecommandations(){
+    document.getElementById('watch7-sidebar').remove();
+    console.log("hide <sidebar> successful");
+}
+
+function hidePage(){
+    document.getElementById('page').remove();
+    console.log("hide <page> successful");
+}
+
+function getPublisher(){
+    return document.getElementsByClassName('yt-user-info')[0].getElementsByTagName('a')[0].innerHTML;
 }
 
 function hideEndScreen(){
@@ -43,7 +75,8 @@ function hideEndScreen(){
         observer.observe(videoPlayer,config);
     }catch(e){
         console.log('does not have videoplayer');
-        console.log(e); // adblocker create too many load exceptions, so we use log to filter our exceptions
+        // adblocker create too many load exceptions, so we use log to filter our exceptions
+        console.log(e);
     }
 
 }
@@ -58,21 +91,23 @@ function logHelper(mutationsRecords, instance, logStr){
 
 function pageContentElementMonitor(a,b){
     logHelper(a,b,'content element is modified');
-    hideRecommandations();
+    hideContent();
 }
 
 function changeOnDomLoad(){
     document.getElementsByTagName('html')[0].style.display="none";
     document.addEventListener("DOMContentLoaded", function(){
         console.log('on DOMContentLoaded');
-        hideRecommandations();
+        hideContent();
         document.getElementsByTagName('html')[0].style.display="block";
         // navigation + click on videos
-        var target = document.getElementById('content'); //<#feed> or <#watch7-sidebar> are both in <#page> -> <#content>
+        //<#feed> or <#watch7-sidebar> are both in <#page> -> <#content>
+        var target = document.getElementById('content');//FIXME once we removed <page> there will be no <content> to listen to
         // create an observer instance
         var observer = new MutationObserver(pageContentElementMonitor);
         // configuration of the observer:
-        var config = { attributes:true, childList: true }; // <#placeholder-player> is added/removed...doesn't work, if you navigate from 1 video to another
+        // <#placeholder-player> is added/removed...doesn't work, if you navigate from 1 video to another
+        var config = { attributes:true, childList: true };
         // pass in the target node, as well as the observer options
         observer.observe(target, config);
     });
