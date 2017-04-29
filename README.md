@@ -22,7 +22,7 @@ TODO list:
 * refactor chrome code into an Angular service
 * the extension button shows about (availability offline)
 * double click on chrome tabs to sort them
-* youtube block videos from a certain channel, make it enter the theatre mode
+* youtube block videos from a certain channel, make it enter the theatre mode, TODO unit test these functionalities
 * make the block list dynamic, generated using ML?
 
 DEBUG list:

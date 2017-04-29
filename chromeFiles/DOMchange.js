@@ -1,6 +1,6 @@
-var blockPublisher = {
-"WehSing":true
-};
+var blockPublisher = new Set([
+"WehSing"
+]);
 
 function hideContent() {
     // youtube main page
@@ -14,19 +14,22 @@ function hideContent() {
 
     // youtube video playing page
     try{
+        hideSideBarRecommandations();
+        // if try block failed at this step -> not a video playing page
         var user = getPublisher();
-        // if black list -> hide page
-        if(blockPublisher[user]){
-            hidePage();
-        // else -> hide sidebar and endscreen
+        // if black list -> hide player
+        if(blockPublisher.has(user)){
+            console.log('trying to block the publisher');
+            hidePlayer();
+        // else -> hide endscreen
         }else{
-            hideSideBarRecommandations();
+            unhidePlayer();
+            console.log('trying to hide the endscreen');
             hideEndScreen();
         }
         return true;
     }catch(e){
-        // ie, search page/a user's main page, both fail through
-        console.log("hide video playing page unsuccessful");
+        console.log("hide video playing page unsuccessful: " + e);
     }
 
     return false;
@@ -42,9 +45,44 @@ function hideSideBarRecommandations(){
     console.log("hide <sidebar> successful");
 }
 
-function hidePage(){
-    document.getElementById('page').remove();
-    console.log("hide <page> successful");
+function unhidePlayer(){
+    document.getElementById('movie_player').setAttribute('style','');
+    console.log('unhide <player> successful');
+}
+
+function hidePlayer(){
+    // TODO make the following two lines of code a function
+    // TODO make sure it does not play automatically
+    // XXX occupying space is fine, if set to display:none
+    // youtube will error out: base.js:2583 Uncaught TypeError: Cannot read property 'g' of null
+    // maybe because of the rendering?
+    var moviePlayer = document.getElementById('movie_player');
+
+    try{
+        // pause video
+        var html5Video = document.getElementsByTagName('video')[0]; // add a event listener
+        var config = {attributes:true}; // class = pause-mode, playing-mode, end-mode
+        var observer = new MutationObserver(function(array,instance){
+            logHelper(array,'html5 video element is modified');
+            console.log('try pause');
+            html5Video.pause();
+            var stringArray = moviePlayer.getAttribute('class').split(' ');
+            for(var i = 0; i < stringArray.length; i++){
+                if('paused-mode' == stringArray[i]){
+                    console.log('paused successful' + moviePlayer);
+                    instance.disconnect();
+                }
+            }
+        })
+        observer.observe(html5Video,config);
+    }catch(e){
+        console.log('does not have html5Video');
+        console.log(e);
+    }
+
+    // hide video controls
+    moviePlayer.setAttribute('style','visibility:hidden')
+    console.log('hide <player> successful');
 }
 
 function getPublisher(){
@@ -56,16 +94,12 @@ function hideEndScreen(){
         var videoPlayer = document.getElementById('movie_player');
         var config = {attributes:true}; // class = pause-mode, playing-mode, end-mode
         var observer = new MutationObserver(function(array,instance){
-            logHelper(array,instance,'movie player is modified');
+            logHelper(array,'movie player is modified');
             try{
+                // XXX endscreen is different for each video, need to run this code everytime
                 var target = videoPlayer.getElementsByClassName('html5-endscreen ytp-player-content videowall-endscreen')[0];
                 target.remove();
-                // var config = {attributes:true};
-                // var ob = new MutationObserver(function(a,b){
-                //     logHelper(a,b,'endscreen is modified');
-                //     target.style.display="none"; //XXX remove() instead of using mutationobserver
-                // })
-                // ob.observe(target,config);
+                console.log('hide <endscreen> successful');
                 instance.disconnect(); // keep watching until we get a endscreen
             }catch(e){
                 console.log('does not have endscreen')
@@ -78,19 +112,17 @@ function hideEndScreen(){
         // adblocker create too many load exceptions, so we use log to filter our exceptions
         console.log(e);
     }
-
 }
 
-function logHelper(mutationsRecords, instance, logStr){
+function logHelper(mutationsRecords, logStr){
     console.group();
     console.log(logStr);
     console.log(mutationsRecords);
-    console.log(instance);
     console.groupEnd();
 }
 
 function pageContentElementMonitor(a,b){
-    logHelper(a,b,'content element is modified');
+    logHelper(a,'content element is modified');
     hideContent();
 }
 
@@ -102,12 +134,15 @@ function changeOnDomLoad(){
         document.getElementsByTagName('html')[0].style.display="block";
         // navigation + click on videos
         //<#feed> or <#watch7-sidebar> are both in <#page> -> <#content>
-        var target = document.getElementById('content');//FIXME once we removed <page> there will be no <content> to listen to
-        // create an observer instance
+        // TODO rename, this observer is singleton, whereas movie_player observer is for each page
+        var target = document.getElementById('content');
+        // XXX if you change the target in mutation observer callback, it will run +1 time
+        // create an observer instance (just a callback function)
         var observer = new MutationObserver(pageContentElementMonitor);
         // configuration of the observer:
         // <#placeholder-player> is added/removed...doesn't work, if you navigate from 1 video to another
-        var config = { attributes:true, childList: true };
+        // XXX childList is immediate child only
+        var config = { attributes:true };
         // pass in the target node, as well as the observer options
         observer.observe(target, config);
     });

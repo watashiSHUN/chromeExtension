@@ -3,6 +3,8 @@ chrome.webRequest.onBeforeRequest.addListener(
     {urls:
         [
             "*://dotamax.com/*",
-            "*://www.douyu.com/*"
+            "*://www.douyu.com/*",
+            "*://www.hanfan.cc/*",
+            "*://manhua.dmzj.com/*"
         ]}, // filter, only process these urls
     ["blocking"])
