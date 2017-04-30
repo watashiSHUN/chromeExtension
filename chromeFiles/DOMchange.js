@@ -1,5 +1,7 @@
 var blockPublisher = new Set([
-"WehSing"
+"WehSing",
+"DOTA2_YYF官方频道",
+"AdmiralBulldog"
 ]);
 
 function hideContent() {
@@ -69,6 +71,7 @@ function hidePlayer(){
             var stringArray = moviePlayer.getAttribute('class').split(' ');
             for(var i = 0; i < stringArray.length; i++){
                 if('paused-mode' == stringArray[i]){
+                    // TODO still hear 1 milisec of sound
                     console.log('paused successful' + moviePlayer);
                     instance.disconnect();
                 }
