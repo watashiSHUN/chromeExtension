@@ -8,3 +8,4 @@ chrome.webRequest.onBeforeRequest.addListener(
             "*://manhua.dmzj.com/*"
         ]}, // filter, only process these urls
     ["blocking"])
+// FIXME avoid duplicating this list in manifest.json => access to all link? too powerful?

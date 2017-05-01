@@ -58,32 +58,35 @@ function hidePlayer(){
     // XXX occupying space is fine, if set to display:none
     // youtube will error out: base.js:2583 Uncaught TypeError: Cannot read property 'g' of null
     // maybe because of the rendering?
-    var moviePlayer = document.getElementById('movie_player');
+    var html5Video = document.getElementsByTagName('video')[0];
+    html5Video.removeAttribute('src');
+    html5Video.load();
 
-    try{
-        // pause video
-        var html5Video = document.getElementsByTagName('video')[0]; // add a event listener
-        var config = {attributes:true}; // class = pause-mode, playing-mode, end-mode
-        var observer = new MutationObserver(function(array,instance){
-            logHelper(array,'html5 video element is modified');
-            console.log('try pause');
-            html5Video.pause();
-            var stringArray = moviePlayer.getAttribute('class').split(' ');
-            for(var i = 0; i < stringArray.length; i++){
-                if('paused-mode' == stringArray[i]){
-                    // TODO still hear 1 milisec of sound
-                    console.log('paused successful' + moviePlayer);
-                    instance.disconnect();
-                }
-            }
-        })
-        observer.observe(html5Video,config);
-    }catch(e){
-        console.log('does not have html5Video');
-        console.log(e);
-    }
+    // try{
+    //     // pause video
+    //     var html5Video = document.getElementsByTagName('video')[0]; // add a event listener
+    //     var config = {attributes:true}; // class = pause-mode, playing-mode, end-mode
+    //     var observer = new MutationObserver(function(array,instance){
+    //         logHelper(array,'html5 video element is modified');
+    //         console.log('try pause');
+    //         html5Video.pause();
+    //         var stringArray = moviePlayer.getAttribute('class').split(' ');
+    //         for(var i = 0; i < stringArray.length; i++){
+    //             if('paused-mode' == stringArray[i]){
+    //                 // TODO still hear 1 milisec of sound
+    //                 console.log('paused successful' + moviePlayer);
+    //                 instance.disconnect();
+    //             }
+    //         }
+    //     })
+    //     observer.observe(html5Video,config);
+    // }catch(e){
+    //     console.log('does not have html5Video');
+    //     console.log(e);
+    // }
 
     // hide video controls
+    var moviePlayer = document.getElementById('movie_player');
     moviePlayer.setAttribute('style','visibility:hidden')
     console.log('hide <player> successful');
 }
