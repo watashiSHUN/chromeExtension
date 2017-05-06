@@ -61,6 +61,7 @@ function hidePlayer(){
     var html5Video = document.getElementsByTagName('video')[0];
     html5Video.removeAttribute('src');
     html5Video.load();
+    // TODO above code no longer works
 
     // hide video controls
     var moviePlayer = document.getElementById('movie_player');
