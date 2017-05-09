@@ -61,7 +61,8 @@ function hidePlayer(){
     var html5Video = document.getElementsByTagName('video')[0];
     html5Video.removeAttribute('src');
     html5Video.load();
-    // TODO above code no longer works
+    // TODO sometimes it does not work
+    // XXX onloadstart event does not always trigger because youtube use the same video element
 
     // hide video controls
     var moviePlayer = document.getElementById('movie_player');
