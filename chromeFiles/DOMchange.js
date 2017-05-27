@@ -28,20 +28,36 @@ function hideContent() {
 
     // youtube video playing page
     try{
+
+        // stuff you can do when video is not fully loaded
+
         // if try block failed at this step -> not a video playing page
         document.getElementById('watch7-sidebar').setAttribute('style','visibility:hidden');
         // XXX remove will cause the theather mode to malfunction, since youtube will try to shift it down
-        var user = getPublisher();
-        // if black list -> hide player
+
+        // stuff you can do when video started playing => setMoviePlayerWatcher
+        // TODO make this an array of functions to be executed
+        callBacks = function(){
+            // XXX endscreen is different for each video, need to run this code everytime
+            console.log('trying to hide the endscreen');
+            document.getElementById('movie_player').getElementsByClassName('html5-endscreen ytp-player-content videowall-endscreen')[0].remove();
+
+            // set to theater mode:
+            var sizeButton = document.getElementsByClassName("ytp-size-button")[0];
+            if(sizeButton.title == "Theater mode"){
+                sizeButton.click();
+            }
+            sizeButton.disabled = true;
+
+            var user = getPublisher();
+            // if black list -> hide player
             console.log('trying to block the publisher');
             if(blockPublisher.has(user)){
-            hidePlayer();
-        // else -> hide endscreen
-        }else{
-            //unhidePlayer();
-            console.log('trying to hide the endscreen');
-            hideEndScreen();
+                hidePlayer();
+            }
         }
+        SetMoviePlayerWatcher(callBacks);
+
         return true;
     }catch(e){
         console.log("hide video playing page unsuccessful: " + e);
@@ -50,6 +66,7 @@ function hideContent() {
     return false;
 }
 
+// TODO remove one day if no more bugs are discovered
 function unhidePlayer(){
     document.getElementById('movie_player').setAttribute('style','');
     console.log('unhide <player> successful');
@@ -60,12 +77,11 @@ function hidePlayer(){
     // youtube will error out: base.js:2583 Uncaught TypeError: Cannot read property 'g' of null
     // maybe because of the rendering?
     var html5Video = document.getElementsByTagName('video')[0];
-    html5Video.remove();
-    // html5Video.removeAttribute('src');
-    // html5Video.load();
-    // html5Video.pause();
+    html5Video.removeAttribute('src');
+    html5Video.load();
     // XXX onloadstart event does not always trigger because youtube use the same video element
 
+    // TODO remove one day if no more bugs are discovered
     // hide video controls
     // var moviePlayer = document.getElementById('movie_player');
     // moviePlayer.setAttribute('style','visibility:hidden')
@@ -76,21 +92,21 @@ function getPublisher(){
     return document.getElementsByClassName('yt-user-info')[0].getElementsByTagName('a')[0].innerHTML;
 }
 
-function hideEndScreen(){
+function SetMoviePlayerWatcher(callBacks){
     var videoPlayer = document.getElementById('movie_player');
     var config = {attributes:true}; // class = pause-mode, playing-mode, end-mode
     var observer = new MutationObserver(function(array,instance){
         logHelper(array,'movie player is modified');
         try{
-            // XXX endscreen is different for each video, need to run this code everytime
-            videoPlayer.getElementsByClassName('html5-endscreen ytp-player-content videowall-endscreen')[0].remove();
-            instance.disconnect(); // keep watching until we get a endscreen
+            callBacks();
+            instance.disconnect(); // keep watching until all the step is successful
+            console.log("movie player watcher detached");
         }catch(e){
-            console.log('does not have endscreen')
             console.log(e);
         }
     });
     observer.observe(videoPlayer,config);
+    console.log("movie player watcher attached");
 }
 
 function logHelper(mutationsRecords, logStr){
