@@ -6,7 +6,6 @@ var blockPublisher = new Set([
 "优酷"
 ]);
 
-// TODO monkeypatch remove Method
 var oldRemove = Element.prototype.remove;
 Element.prototype.remove = function(){
     // XXX this.oldRemove(arguments) == this['oldRemove'], no such property
@@ -14,6 +13,7 @@ Element.prototype.remove = function(){
     var s2 = this.className ? '<class:' + this.className + '>': '';
     console.log('remove ' + s1 + s2 + ' successfully');
     oldRemove.apply(this,arguments);
+    // this.oldRemove does not exist
 }
 
 function hideContent() {
@@ -37,7 +37,7 @@ function hideContent() {
             hidePlayer();
         // else -> hide endscreen
         }else{
-            unhidePlayer();
+            //unhidePlayer();
             console.log('trying to hide the endscreen');
             hideEndScreen();
         }
@@ -59,14 +59,15 @@ function hidePlayer(){
     // youtube will error out: base.js:2583 Uncaught TypeError: Cannot read property 'g' of null
     // maybe because of the rendering?
     var html5Video = document.getElementsByTagName('video')[0];
-    html5Video.removeAttribute('src');
-    html5Video.load();
-    // TODO sometimes it does not work
+    html5Video.remove();
+    // html5Video.removeAttribute('src');
+    // html5Video.load();
+    // html5Video.pause();
     // XXX onloadstart event does not always trigger because youtube use the same video element
 
     // hide video controls
-    var moviePlayer = document.getElementById('movie_player');
-    moviePlayer.setAttribute('style','visibility:hidden')
+    // var moviePlayer = document.getElementById('movie_player');
+    // moviePlayer.setAttribute('style','visibility:hidden')
     console.log('hide <player> successful');
 }
 
