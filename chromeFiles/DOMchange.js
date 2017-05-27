@@ -29,11 +29,12 @@ function hideContent() {
     // youtube video playing page
     try{
         // if try block failed at this step -> not a video playing page
-        document.getElementById('watch7-sidebar').remove();
+        document.getElementById('watch7-sidebar').setAttribute('style','visibility:hidden');
+        // XXX remove will cause the theather mode to malfunction, since youtube will try to shift it down
         var user = getPublisher();
         // if black list -> hide player
-        if(blockPublisher.has(user)){
             console.log('trying to block the publisher');
+            if(blockPublisher.has(user)){
             hidePlayer();
         // else -> hide endscreen
         }else{
