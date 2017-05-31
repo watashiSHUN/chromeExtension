@@ -32,7 +32,8 @@ function hideContent() {
         // stuff you can do when video is not fully loaded
 
         // if try block failed at this step -> not a video playing page
-        document.getElementById('watch7-sidebar').setAttribute('style','visibility:hidden');
+        document.getElementById('watch7-sidebar').setAttribute('style','display:none');
+        document.getElementById('watch7-content').setAttribute('style','width:auto; float:none');
         // XXX remove will cause the theather mode to malfunction, since youtube will try to shift it down
 
         // stuff you can do when video started playing => setMoviePlayerWatcher
@@ -45,9 +46,10 @@ function hideContent() {
             // set to theater mode:
             var sizeButton = document.getElementsByClassName("ytp-size-button")[0];
             if(sizeButton.title == "Theater mode"){
+                // TODO does not always work, once it does, need to disable normal view
+                console.log('trying to turn to theater mode')
                 sizeButton.click();
             }
-            sizeButton.disabled = true;
 
             var user = getPublisher();
             // if black list -> hide player
