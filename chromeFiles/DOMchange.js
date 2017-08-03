@@ -16,6 +16,35 @@ Element.prototype.remove = function(){
     // this.oldRemove does not exist
 }
 
+function theaterModeCallBack(block,video){
+  // TODO the following two function, cannot tell if they are successful
+  // if there's a way to produce failure
+  var sizeButton = document.getElementsByClassName("ytp-size-button")[0];
+  if(sizeButton.title == "Theater mode"){
+    sizeButton.click();
+    throw 'trying to turn to theater mode';
+  }else if(block && video.hasAttribute('src')){
+    // XXX occupying space is fine, if set to display:none
+    // youtube will error out: base.js:2583 Uncaught TypeError: Cannot read property 'g' of null
+    // maybe because of the rendering?
+    // XXX onloadstart event does not always trigger because youtube use the same video element
+    video.removeAttribute('src');
+    video.load();
+    throw 'trying to block the publisher';
+  }
+}
+
+function hideEndScreenCallBack(){
+  // stuff you can do when video started playing => setMoviePlayerWatcher
+  // XXX endscreen is different for each video, need to run this code everytime
+  console.log('trying to hide the endscreen');
+  document.getElementById('movie_player').getElementsByClassName('html5-endscreen ytp-player-content videowall-endscreen')[0].remove();
+  var user = getPublisher();
+
+  SetMoviePlayerWatcher(function(){theaterModeCallBack(blockPublisher.has(user),document.getElementsByTagName('video')[0])});
+}
+
+
 function hideContent() {
     // youtube main page
     try{
@@ -25,82 +54,32 @@ function hideContent() {
         // if it doesn't have it, we don't need to hide
         console.log("hide main page unsuccessful: " + e);
     }
-
     // youtube video playing page
     try{
-
         // stuff you can do when video is not fully loaded
-
         // if try block failed at this step -> not a video playing page
         document.getElementById('watch7-sidebar').setAttribute('style','display:none');
         document.getElementById('watch7-content').setAttribute('style','width:auto; float:none');
         // XXX remove will cause the theather mode to malfunction, since youtube will try to shift it down
-
-        // stuff you can do when video started playing => setMoviePlayerWatcher
-        // TODO make this an array of functions to be executed
-        callBacks = function(){
-            // XXX endscreen is different for each video, need to run this code everytime
-            console.log('trying to hide the endscreen');
-            document.getElementById('movie_player').getElementsByClassName('html5-endscreen ytp-player-content videowall-endscreen')[0].remove();
-
-            // set to theater mode:
-            var sizeButton = document.getElementsByClassName("ytp-size-button")[0];
-            if(sizeButton.title == "Theater mode"){
-                // TODO does not always work, once it does, need to disable normal view
-                console.log('trying to turn to theater mode')
-                sizeButton.click();
-            }
-
-            var user = getPublisher();
-            // if black list -> hide player
-            console.log('trying to block the publisher');
-            if(blockPublisher.has(user)){
-                hidePlayer();
-            }
-        }
-        SetMoviePlayerWatcher(callBacks);
-
+        SetMoviePlayerWatcher(hideEndScreenCallBack);
         return true;
     }catch(e){
         console.log("hide video playing page unsuccessful: " + e);
     }
-
     return false;
-}
-
-// TODO remove one day if no more bugs are discovered
-function unhidePlayer(){
-    document.getElementById('movie_player').setAttribute('style','');
-    console.log('unhide <player> successful');
-}
-
-function hidePlayer(){
-    // XXX occupying space is fine, if set to display:none
-    // youtube will error out: base.js:2583 Uncaught TypeError: Cannot read property 'g' of null
-    // maybe because of the rendering?
-    var html5Video = document.getElementsByTagName('video')[0];
-    html5Video.removeAttribute('src');
-    html5Video.load();
-    // XXX onloadstart event does not always trigger because youtube use the same video element
-
-    // TODO remove one day if no more bugs are discovered
-    // hide video controls
-    // var moviePlayer = document.getElementById('movie_player');
-    // moviePlayer.setAttribute('style','visibility:hidden')
-    console.log('hide <player> successful');
 }
 
 function getPublisher(){
     return document.getElementsByClassName('yt-user-info')[0].getElementsByTagName('a')[0].innerHTML;
 }
 
-function SetMoviePlayerWatcher(callBacks){
+function SetMoviePlayerWatcher(callback){
     var videoPlayer = document.getElementById('movie_player');
     var config = {attributes:true}; // class = pause-mode, playing-mode, end-mode
     var observer = new MutationObserver(function(array,instance){
         logHelper(array,'movie player is modified');
         try{
-            callBacks();
+            callback();
             instance.disconnect(); // keep watching until all the step is successful
             console.log("movie player watcher detached");
         }catch(e){
