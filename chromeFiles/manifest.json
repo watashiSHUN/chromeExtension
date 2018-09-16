@@ -25,7 +25,6 @@
         {
             "matches":["https://www.youtube.com/*"],
             "js":[
-                "logging.js",
                 "DOMchange.js"
             ],
             "run_at":"document_start"
