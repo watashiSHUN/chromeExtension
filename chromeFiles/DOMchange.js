@@ -14,7 +14,7 @@ var blockPublisher = new Set([
     "优酷"
 ]);
 
-// TODO remove() is not longer being called
+// remove also does logging
 var oldRemove = Element.prototype.remove;
 Element.prototype.remove = function () {
     // XXX this.oldRemove(arguments) == this['oldRemove'], no such property
@@ -51,10 +51,7 @@ function moviePlayerCallback() {
     var endScreen = document.querySelector("div.ytp-endscreen-content");
     var endScreenResult = false;
     if (endScreen != null) {
-        if (endScreen.style.display != "none") {
-            endScreen.style.display = "none"; // possible to reset multiple times
-            console.log("hide end page successfully");
-        }
+        endScreen.remove();
         endScreenResult = true;
     }
 
@@ -71,17 +68,22 @@ function moviePlayerCallback() {
     return endScreenResult && sizeButtonResult;
 }
 
+// TODO currently boolean flags are not used, maybe refactor???
 function hideContent() {
     // youtube main page
     var oldFeed = document.getElementById('feed');
-    var newFeed = document.querySelector('ytd-browse');
+    var newFeed = null;
+    var various = document.querySelectorAll('ytd-browse.style-scope.ytd-page-manager');
+    various.forEach(function(element){
+        // we don't want to rule out page-subtype == "channels"
+        if(element.getAttribute('page-subtype') == "home"){
+            newFeed = element;
+        }
+    })
     var feedToRemove = oldFeed || newFeed;
     var mainPageResult = false;
     if (feedToRemove) {
-        if (feedToRemove.style.display != "none") {
-            feedToRemove.style.display = "none";
-            console.log("hide main page successfully");
-        }
+        feedToRemove.remove();
         mainPageResult = true;
     }
 
@@ -90,28 +92,24 @@ function hideContent() {
     // var oldPlayer = document.getElementById('watch7-content');
     // var playerToExtend = oldPlayer || newPlayer;
     var oldSideBar = document.getElementById('watch7-sidebar');
-    var newSideBar = document.querySelector('div#secondary.style-scope.ytd-watch-flexy');
+    var newSideBar = document.querySelector('div#related.style-scope.ytd-watch-flexy');
+    // FIXME, secondary also includes the playlist, which I want to include
     // could have mulitple id=secondary...TODO report to google?
     // repo steps
     // 1. click a channel
     // 2. click a video to play
     // 3. document.getElementById('secondary');
     var sideBarToHide = oldSideBar || newSideBar;
-    var movie_player = document.getElementById("movie_player");
     var sideBarResult = false;
+    var movie_player = document.getElementById("movie_player");
     if (sideBarToHide && movie_player) {
-        if (sideBarToHide.style.display != "none") {
-            // XXX remove will cause the theather mode to malfunction, since youtube will try to shift it down
-            // above might not longer be true
-            sideBarToHide.style.display = "none"; // "=none, is not valid javascript"
-            // playerToExtend.setAttribute('style', 'width:auto; float:none');
-            // movie_player is the immediate parent of endscreeen
-            moviePlayerCallback();
-            DOMWatcher(movie_player, { childList: true }, moviePlayerCallback, "vidoeplayer_watcher");
-            console.log("hide side bar successfully");
-        }
+        sideBarToHide.remove();
+        // movie_player is the immediate parent of endscreeen
+        moviePlayerCallback();
+        DOMWatcher(movie_player, { childList: true }, moviePlayerCallback, "vidoeplayer_watcher");
         sideBarResult = true;
     }
+
     // hide either one of them
     return mainPageResult || sideBarResult;
 }
