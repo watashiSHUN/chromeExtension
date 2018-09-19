@@ -21,15 +21,6 @@
     "chrome_url_overrides":{
         "newtab":"dist/index.html"
     },
-    "content_scripts":[
-        {
-            "matches":["https://www.youtube.com/*"],
-            "js":[
-                "DOMchange.js"
-            ],
-            "run_at":"document_start"
-        }
-    ],
     "background":{
         "scripts":[
             "logging.js",
