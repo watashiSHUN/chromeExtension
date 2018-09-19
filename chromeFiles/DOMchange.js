@@ -18,9 +18,10 @@ var blockPublisher = new Set([
 var oldRemove = Element.prototype.remove;
 Element.prototype.remove = function () {
     // XXX this.oldRemove(arguments) == this['oldRemove'], no such property
+    var s0 = this.tagName ? '<tag:' + this.tagName + '>' : '';
     var s1 = this.id ? '<id: ' + this.id + '>' : '';
     var s2 = this.className ? '<class:' + this.className + '>' : '';
-    console.log('remove ' + s1 + s2 + ' successfully');
+    console.log('remove ' + s0 + "," + s1 + "," + s2 + ' successfully');
     oldRemove.apply(this, arguments);
     // this.oldRemove does not exist
 }
@@ -48,7 +49,8 @@ function theaterModeCallBack(block, video) {
 function moviePlayerCallback() {
     // stuff you can do when video started playing => setMoviePlayerWatcher
     // XXX endscreen is different for each video, need to run this code everytime
-    var endScreen = document.querySelector("div.ytp-endscreen-content");
+    // "div.ytp-endscreen-content" might not get detected since its not direct child of movie_player (subtree:false)
+    var endScreen = document.querySelector("div.html5-endscreen");
     var endScreenResult = false;
     if (endScreen != null) {
         endScreen.remove();
@@ -74,9 +76,9 @@ function hideContent() {
     var oldFeed = document.getElementById('feed');
     var newFeed = null;
     var various = document.querySelectorAll('ytd-browse.style-scope.ytd-page-manager');
-    various.forEach(function(element){
+    various.forEach(function (element) {
         // we don't want to rule out page-subtype == "channels"
-        if(element.getAttribute('page-subtype') == "home"){
+        if (element.getAttribute('page-subtype') == "home") {
             newFeed = element;
         }
     })
@@ -140,11 +142,11 @@ function changeOnDomLoad() {
         document.documentElement.style.display = "block";
         // FIXME(this is likely changed in the new youtube) 
         // this observer is singleton, whereas movie_player observer is for each page
-        var target = document.documentElement;
+        var target = document.querySelector('ytd-app');
         // whatever the target is, it must exist when the DOM is loaded
         console.assert(target != null);
         // XXX if you change the target in mutation observer callback, it will run +1 time 
-        // => right now we use display=None, attribute change
+        // which is WHY IT IS BETTER TO MONITOR ON ATTRIBUTE
         // configuration of the observer:
         // XXX childList is immediate child only
         var config = { childList: true, subtree: true };
