@@ -29,6 +29,7 @@ Element.prototype.remove = function () {
     // this.oldRemove does not exist
 }
 
+// movie_player is the immediate parent of endscreeen
 function moviePlayerCallback() {
     // XXX it seems that youtube insert endscreen to the same movie_player for different videos
     // "div.ytp-endscreen-content" might not get detected since its not direct child of movie_player (subtree:false)
@@ -48,6 +49,9 @@ function moviePlayerCallback() {
     }
 }
 
+var moviePlayerGlob = null; // this is the movie player we are currently observing
+var moviePlayerObserverGlob = null; // TODO(shun) these two in the same class
+
 function hideContent() {
     // youtube main page
     var iswatchpage = document.querySelector('ytd-app').getAttribute('is-watch-page');
@@ -66,7 +70,7 @@ function hideContent() {
         if (feedToRemove) {
             feedToRemove.remove();
         }
-    // main page also has "movie_player", but we don't want to monitor it
+        // main page also has "movie_player", but we don't want to monitor it
     } else {
         // youtube video playing page
         // var newPlayer = document.getElementById('primary');
@@ -83,12 +87,28 @@ function hideContent() {
         // 2. click a video to play
         // 3. document.querySelectorAll('#secondary');
         var sideBarToHide = oldSideBar || newSideBar;
-        var movie_player = document.getElementById("movie_player");
-        if (sideBarToHide && movie_player) {
+        if (sideBarToHide) {
             sideBarToHide.remove();
-            // movie_player is the immediate parent of endscreeen
-            moviePlayerCallback();
-            DOMWatcherWithLog(movie_player, { childList: true }, moviePlayerCallback, "vidoeplayer_watcher");
+        }
+
+        // when going from watch pages to watch pages, movie_player stays the same
+        // but if jumped to a channel(not through subs), a new movie player is later introduced
+        var movie_player = document.getElementById("movie_player");
+        if (movie_player != moviePlayerGlob) {
+            console.log("old: " + moviePlayerGlob + ", new: " + movie_player);
+            moviePlayerGlob = movie_player;
+            // pause old moviePlayer observer, if its the first time, there will be nothing to pause
+            if (moviePlayerObserverGlob != null) {
+                moviePlayerObserverGlob.disconnect();
+                moviePlayerObserverGlob = null; // reset
+                console.log("old movie_player watcher detached");
+            }
+            // movie_player is removed from page, we don't need to add observer
+            if (moviePlayerGlob != null) {
+                // initial hide, in case things are ready at this stage
+                moviePlayerCallback();
+                moviePlayerObserverGlob = DOMWatcherWithLog(movie_player, { childList: true }, moviePlayerCallback, "new movie_player watcher");
+            }
         }
     }
 }
@@ -100,6 +120,7 @@ function DOMWatcherWithLog(domElement, config, callback, watcherName) {
     });
     observer.observe(domElement, config);
     console.log(watcherName + " attached")
+    return observer;
 }
 
 function logHelper(mutationsRecords, logStr) {
@@ -113,7 +134,7 @@ function changeOnDomLoad() {
     document.documentElement.style.display = "none";
     document.addEventListener("DOMContentLoaded", function () {
         console.log('on DOMContentLoaded');
-        // initial hide
+        // initial hide, in case things are ready at this stage
         hideContent();
         document.documentElement.style.display = "block";
         var target = document.querySelector('ytd-app');
